@@ -1,0 +1,37 @@
+<div class="profile-page">
+  <div class="profile-card">
+    <div class="profile-avatar"></div>
+    <div class="profile-name">{{first_name}}</div>
+
+    <div class="profile-info">
+      <div class="info-row">
+        <div class="label">Почта</div>
+        <div class="value">{{email}}</div>
+      </div>
+      <div class="info-row">
+        <div class="label">Логин</div>
+        <div class="value">{{login}}</div>
+      </div>
+      <div class="info-row">
+        <div class="label">Имя</div>
+        <div class="value">{{first_name}}</div>
+      </div>
+      <div class="info-row">
+        <div class="label">Фамилия</div>
+        <div class="value">{{second_name}}</div>
+      </div>
+      <div class="info-row">
+        <div class="label">Имя в чате</div>
+        <div class="value">{{display_name}}</div>
+      </div>
+      <div class="info-row">
+        <div class="label">Телефон</div>
+        <div class="value">{{phone}}</div>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      {{> Button id="login-button" text="Сохранить"}}
+    </div>
+  </div>
+</div>
