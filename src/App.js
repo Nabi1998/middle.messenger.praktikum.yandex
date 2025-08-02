@@ -1,5 +1,4 @@
 import Handlebars from 'handlebars';
-// import * as Pages from './pages';
 import './helpers/handlebarsHelpers.js';
 
 import Button from './components/Button.js';
