@@ -1,5 +1,4 @@
 import Handlebars from 'handlebars';
-// import * as Pages from './pages';
 import './helpers/handlebarsHelpers.js';
 
 import Button from './components/Button.js';
@@ -19,6 +18,8 @@ import { profilePage } from './pages/profilePage';
 import { editProfilePage } from './pages/editProfilePage';
 import { errorPage } from './pages/errorPage';
 import { errorPageTwo } from './pages/errorPage';
+import { changeData } from './pages/changeData';
+
 
 
 const Pages = {
@@ -28,7 +29,8 @@ const Pages = {
   profilePage,
   errorPage,
   errorPageTwo,
-  editProfilePage
+  editProfilePage,
+  changeData
 };
 
 
@@ -61,11 +63,29 @@ export default class App {
         this.changePage(e.target.dataset.page);
       });
     });
+    this.setupAvatarModal();
+
   }
 
   changePage(page) {
     this.state.currentPage = page;
     this.render();
+  }
+  setupAvatarModal() {
+    const avatarButton = document.getElementById('open-avatar-modal');
+    const avatarModal = document.getElementById('avatar-modal');
+  
+    if (!avatarButton || !avatarModal) return;
+  
+    avatarButton.addEventListener('click', () => {
+      avatarModal.classList.remove('hidden');
+    });
+  
+    avatarModal.addEventListener('click', (e) => {
+      if (e.target === avatarModal) {
+        avatarModal.classList.add('hidden');
+      }
+    });
   }
 
 }
@@ -77,7 +97,7 @@ window.addEventListener('hashchange', handleRouting);
 window.addEventListener('load', handleRouting);
 
 function handleRouting() {
-  const hash = location.hash.slice(1); // Убираем #
+  const hash = location.hash.slice(1);
   let page = 'loginPage';
 
   switch (hash) {
@@ -102,9 +122,13 @@ function handleRouting() {
       case 'not-supported':
       page = 'errorPageTwo';
       break;
+    case 'change-data':
+        page = 'changeData';
+      break;
     default:
       page = 'loginPage';
   }
 
   app.changePage(page);
 }
+

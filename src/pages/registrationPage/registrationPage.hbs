@@ -1,31 +1,31 @@
 <div class="login-card">
   <h1 class="login-title">Регистрация</h1>
-  <div class="login-form">
+  <form class="login-form" method="POST" action="/signup">
     <label class="login-label" for="email">Почта</label>
-    {{> Input id="email" type="email"  }}
+    {{> Input id="email" name="email" type="email" }}
 
     <label class="login-label" for="username">Логин</label>
-    {{> Input id="username" type="text" }}
+    {{> Input id="username" name="login" type="text" }}
 
     <label class="login-label" for="first-name">Имя</label>
-    {{> Input id="first-name" type="text"  }}
+    {{> Input id="first-name" name="first_name" type="text" }}
 
     <label class="login-label" for="last-name">Фамилия</label>
-    {{> Input id="last-name" type="text" }}
+    {{> Input id="last-name" name="second_name" type="text" }}
 
     <label class="login-label" for="phone">Телефон</label>
-    {{> Input id="phone" type="tel" }}
+    {{> Input id="phone" name="phone" type="tel" }}
 
     <label class="login-label" for="password">Пароль</label>
-    {{> Input id="password" type="password" }}
+    {{> Input id="password" name="password" type="password" }}
 
     <label class="login-label" for="confirm-password">Пароль (ещё раз)</label>
-    {{> Input id="confirm-password" type="password" }}
+    {{> Input id="confirm-password" name="password_repeat" type="password" }}
 
-    {{> Button id="register-button" text="Зарегистрироваться" }}
+    {{> Button type="submit" id="register-button" text="Зарегистрироваться" }}
 
     <div class="login-footer">
       <a href="/login" class="register-link">Уже есть аккаунт?</a>
     </div>
-  </div>
+  </form>
 </div>

@@ -1,31 +1,38 @@
 <header class="app-header">
-  <nav class="nav-bar">
-    <a href="#login" class="nav-link">Вход</a>
-    <a href="#register" class="nav-link">Регистрация</a>
-    <a href="#chat" class="nav-link">Чат</a>
-    <a href="#profile" class="nav-link">Профиль</a>
-    <a href="#profile-edit" class="nav-link">Редактирование профиля</a>
-    <a href="#not-found" class="nav-link">Ошибка 404</a>
-    <a href="#not-supported" class="nav-link">Ошибка 505</a>
-  </nav>
+ <nav class="nav-bar">
+   <ul class="nav-list">
+     <li class="nav-item"><a href="#login" class="nav-link">Вход</a></li>
+     <li class="nav-item"><a href="#register" class="nav-link">Регистрация</a></li>
+     <li class="nav-item"><a href="#chat" class="nav-link">Чат</a></li>
+     <li class="nav-item"><a href="#profile" class="nav-link">Профиль</a></li>
+     <li class="nav-item"><a href="#profile-edit" class="nav-link">Редактирование профиля</a></li>
+     <li class="nav-item"><a href="#change-data" class="nav-link">Изменить логин и пароль</a></li>
+     <li class="nav-item"><a href="#not-found" class="nav-link">Ошибка 404</a></li>
+     <li class="nav-item"><a href="#not-supported" class="nav-link">Ошибка 505</a></li>
+   </ul>
+ </nav>
 </header>
 
 
 
-<div class="login-card">
-  <h1 class="login-title">Вход</h1>
-  <div class="login-form">
-    <label class="login-label" for="login">Логин</label>
-    {{> Input id="login" type="text" placeholder="" }}
 
-    <label class="login-label" for="password">Пароль</label>
-    {{> Input id="login-label" type="password" }}
+<main class="app-main">
+  <div class="login-card">
+    <h1 class="login-title">Вход</h1>
+    <form class="login-form" method="POST" action="/login">
+      <label class="login-label" for="login">Логин</label>
+      {{> Input id="login" name="login" type="text" placeholder="" }}
 
-    {{> Button id="login-button" text="Авторизоваться"}}
+      <label class="login-label" for="password">Пароль</label>
+      {{> Input id="password" name="password" type="password" }}
 
-    <div class="login-footer">
-      <a href="#" class="footer-link" data-page="registrationPage">Уже есть аккаунт?</a>
-    </div>
+      {{> Button type="submit" id="login-button" text="Авторизоваться"}}
+
+      <div class="login-footer">
+        <a href="#" class="footer-link" data-page="registrationPage">Уже есть аккаунт?</a>
+      </div>
+    </form>
   </div>
+</main>
 
-</div>
+

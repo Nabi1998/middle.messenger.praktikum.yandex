@@ -30,17 +30,17 @@
   font-size: 14px;
   margin-bottom: 8px;
   border: none;
-  border-bottom: 1px solid #3f51b5;
+  border-bottom: 1px solid var(--primary-color);
   outline: none;
 }
 
 .login-footer {
   margin-top: 16px;
-  color: #3369F3;
+  color: var(--primary-color);
 }
 
 .register-link {
-  color: #3f51b5;
+  color: var(--primary-color);
   font-size: 14px;
   text-decoration: none;
 }
@@ -51,7 +51,6 @@
 }
 
 
-
 .app-header {
   background-color: #f5f5f5;
   padding: 12px 0;
@@ -59,18 +58,46 @@
   text-align: center;
 }
 
+
 .nav-bar {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+  background-color: #f5f5f5;
 }
 
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
 .nav-link {
   text-decoration: none;
   color: #333;
-  font-weight: bold;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .nav-link:hover {
   color: #007bff;
+}
+
+.nav-link:active,
+.nav-link.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.nav-list .nav-item {
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.nav-list .nav-item {
+  all: unset;
+  display: list-item; /* вернуть семантику */
 }
