@@ -20,4 +20,4 @@ Messenger — это веб-приложение для обмена сообщ�
 
 Ссылки:
 На веб-приложение:
-Netlify: https://message-service.netlify.app/
+Netlify: https://message-dev.netlify.app/
