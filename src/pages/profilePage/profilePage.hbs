@@ -1,41 +1,43 @@
-<div class="profile-page">
-  <div class="profile-card">
-    <div class="profile-avatar"></div>
-    <div class="profile-name">{{first_name}}</div>
+<main>
+  <div class="profile-page">
+    <div class="profile-card">
+      <div class="profile-avatar"></div>
+      <div class="profile-name">{{first_name}}</div>
 
-    <div class="profile-info">
-      <div class="info-row">
-        <div class="label">Почта</div>
-        <div class="value">{{email}}</div>
+      <div class="profile-info">
+        <div class="info-row">
+          <div class="label">Почта</div>
+          <div class="value">{{email}}</div>
+        </div>
+        <div class="info-row">
+          <div class="label">Логин</div>
+          <div class="value">{{login}}</div>
+        </div>
+        <div class="info-row">
+          <div class="label">Имя</div>
+          <div class="value">{{first_name}}</div>
+        </div>
+        <div class="info-row">
+          <div class="label">Фамилия</div>
+          <div class="value">{{second_name}}</div>
+        </div>
+        <div class="info-row">
+          <div class="label">Имя в чате</div>
+          <div class="value">{{display_name}}</div>
+        </div>
+        <div class="info-row">
+          <div class="label">Телефон</div>
+          <div class="value">{{phone}}</div>
+        </div>
       </div>
-      <div class="info-row">
-        <div class="label">Логин</div>
-        <div class="value">{{login}}</div>
-      </div>
-      <div class="info-row">
-        <div class="label">Имя</div>
-        <div class="value">{{first_name}}</div>
-      </div>
-      <div class="info-row">
-        <div class="label">Фамилия</div>
-        <div class="value">{{second_name}}</div>
-      </div>
-      <div class="info-row">
-        <div class="label">Имя в чате</div>
-        <div class="value">{{display_name}}</div>
-      </div>
-      <div class="info-row">
-        <div class="label">Телефон</div>
-        <div class="value">{{phone}}</div>
-      </div>
-    </div>
 
-    <div class="profile-actions">
-      <a href="/settings" class="action-link">Изменить данные</a>
-      <a href="/change-password" class="action-link">Изменить пароль</a>
-      <form action="/logout" method="post">
-        <button type="submit" class="logout-button">Выйти</button>
-      </form>
+      <div class="profile-actions">
+        <a href="/settings" class="action-link">Изменить данные</a>
+        <a href="/change-password" class="action-link">Изменить пароль</a>
+        <form action="/logout" method="post">
+          <button type="submit" class="logout-button">Выйти</button>
+        </form>
+      </div>
     </div>
   </div>
-</div>
+</main>

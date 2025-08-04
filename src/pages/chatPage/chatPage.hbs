@@ -1,4 +1,4 @@
-<div class="chat-page">
+<main class="chat-page">
   <aside class="sidebar">
     <div class="sidebar-header">
       <h2>Chats</h2>
@@ -19,7 +19,7 @@
     </ul>
   </aside>
 
-  <main class="chat-window">
+  <section class="chat-window">
     <div class="chat-header">
       <div class="chat-title">Navi</div>
     </div>
@@ -33,9 +33,9 @@
       </div>
     </div>
 
-    <form class="chat-input" onsubmit="event.preventDefault(); /* handle send message */">
+    <form class="chat-input" onsubmit="event.preventDefault();">
       <input type="text" placeholder="Напишите сообщение..." name="message" required>
       <button type="submit">Send</button>
     </form>
-  </main>
-</div>
+  </section>
+</main>
