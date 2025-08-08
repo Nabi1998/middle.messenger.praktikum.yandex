@@ -1,0 +1,43 @@
+<main>
+  <div class="edit-profile-page">
+    <div class="edit-profile-card">
+      <div class="edit-profile-avatar" id="open-avatar-modal">
+        🖼️
+      </div>
+      <div class="edit-profile-name">{{first_name}}</div>
+
+      <form class="edit-profile-form" method="POST" action="/user/profile">
+        <div class="edit-profile-info">
+          <div class="edit-profile-info-row">
+            <label class="edit-profile-label" for="email">Почта</label>
+            {{> Input id="email" name="email" type="email" value=email }}
+          </div>
+          <div class="edit-profile-info-row">
+            <label class="edit-profile-label" for="login">Логин</label>
+            {{> Input id="login" name="login" type="text" value=login }}
+          </div>
+          <div class="edit-profile-info-row">
+            <label class="edit-profile-label" for="first_name">Имя</label>
+            {{> Input id="first_name" name="first_name" type="text" value=first_name }}
+          </div>
+          <div class="edit-profile-info-row">
+            <label class="edit-profile-label" for="second_name">Фамилия</label>
+            {{> Input id="second_name" name="second_name" type="text" value=second_name }}
+          </div>
+          <div class="edit-profile-info-row">
+            <label class="edit-profile-label" for="display_name">Имя в чате</label>
+            {{> Input id="display_name" name="display_name" type="text" value=display_name }}
+          </div>
+          <div class="edit-profile-info-row">
+            <label class="edit-profile-label" for="phone">Телефон</label>
+            {{> Input id="phone" name="phone" type="tel" value=phone }}
+          </div>
+        </div>
+
+        <div class="edit-profile-actions">
+          {{> Button type="submit" id="save-profile" text="Сохранить"}}
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

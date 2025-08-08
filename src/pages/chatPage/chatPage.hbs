@@ -1,0 +1,41 @@
+<main class="chat-page">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Chats</h2>
+    </div>
+    <ul class="chat-list">
+      <li class="chat-item active">
+        <div class="chat-info">
+          <div class="chat-name">Navi</div>
+          <div class="chat-last-message">Привет! Как дела?</div>
+        </div>
+      </li>
+      <li class="chat-item">
+        <div class="chat-info">
+          <div class="chat-name">Support</div>
+          <div class="chat-last-message">We replied to your request</div>
+        </div>
+      </li>
+    </ul>
+  </aside>
+
+  <section class="chat-window">
+    <div class="chat-header">
+      <div class="chat-title">Navi</div>
+    </div>
+
+    <div class="chat-messages">
+      <div class="message from">
+        <p>Привет! Как дела?</p>
+      </div>
+      <div class="message to">
+        <p>Привет! Всё хорошо, а у тебя?</p>
+      </div>
+    </div>
+
+    <form class="chat-input" onsubmit="event.preventDefault();">
+      <input type="text" placeholder="Напишите сообщение..." name="message" required>
+      <button type="submit">Send</button>
+    </form>
+  </section>
+</main>
