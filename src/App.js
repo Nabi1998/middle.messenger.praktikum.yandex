@@ -11,7 +11,7 @@ Handlebars.registerPartial('Input', Input);
 Handlebars.registerPartial('Footer', Footer);
 Handlebars.registerPartial('Link', Link);
 
-import { loginPage } from './pages/loginPage';
+import { loginPage, initLoginPage } from './pages/loginPage';
 import { registrationPage } from './pages/registrationPage';
 import { chatPage } from './pages/chatPage';
 import { profilePage } from './pages/profilePage';
@@ -52,6 +52,13 @@ export default class App {
 
     const template = Handlebars.compile(pageTemplate);
     this.appElement.innerHTML = template({});
+
+      if (this.state.currentPage === "loginPage") {
+    initLoginPage();
+  }
+  if (this.state.currentPage === "editProfilePage") {
+    initEditProfilePage();
+}
     this.attachEventListeners();
   }
 
