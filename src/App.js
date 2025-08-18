@@ -11,16 +11,15 @@ Handlebars.registerPartial('Input', Input);
 Handlebars.registerPartial('Footer', Footer);
 Handlebars.registerPartial('Link', Link);
 
-import { loginPage, initLoginPage } from './pages/loginPage';
-import { registrationPage } from './pages/registrationPage';
-import { chatPage } from './pages/chatPage';
-import { profilePage } from './pages/profilePage';
-import { editProfilePage } from './pages/editProfilePage';
-import { errorPage } from './pages/errorPage';
-import { errorPageTwo } from './pages/errorPage';
-import { changeData } from './pages/changeData';
-
-
+import {loginPage, initLoginPage} from './pages/loginPage';
+import {registrationPage} from './pages/registrationPage';
+import {chatPage} from './pages/chatPage';
+import {profilePage} from './pages/profilePage';
+import {editProfilePage, initEditProfilePage} from './pages/editProfilePage';
+import {errorPage} from './pages/errorPage';
+import {errorPageTwo} from './pages/errorPage';
+import {changeData, initChangeDataPage} from './pages/changeData';
+export { initLoginPage } from './pages/loginPage/initLoginPage.js';
 
 const Pages = {
   loginPage,
@@ -33,6 +32,12 @@ const Pages = {
   changeData
 };
 
+
+const pageInits = {
+  loginPage: initLoginPage,
+  editProfilePage: initEditProfilePage,
+  changeDataPage: initChangeDataPage // добавишь функцию по аналогии
+};
 
 export default class App {
   constructor() {
@@ -53,12 +58,10 @@ export default class App {
     const template = Handlebars.compile(pageTemplate);
     this.appElement.innerHTML = template({});
 
-      if (this.state.currentPage === "loginPage") {
-    initLoginPage();
-  }
-  if (this.state.currentPage === "editProfilePage") {
-    initEditProfilePage();
-}
+    const initFn = pageInits[this.state.currentPage];
+    if (initFn) {
+      initFn();
+    }
     this.attachEventListeners();
   }
 
@@ -78,16 +81,17 @@ export default class App {
     this.state.currentPage = page;
     this.render();
   }
+
   setupAvatarModal() {
     const avatarButton = document.getElementById('open-avatar-modal');
     const avatarModal = document.getElementById('avatar-modal');
-  
+
     if (!avatarButton || !avatarModal) return;
-  
+
     avatarButton.addEventListener('click', () => {
       avatarModal.classList.remove('hidden');
     });
-  
+
     avatarModal.addEventListener('click', (e) => {
       if (e.target === avatarModal) {
         avatarModal.classList.add('hidden');
@@ -123,14 +127,14 @@ function handleRouting() {
     case 'login':
       page = 'loginPage';
       break;
-      case 'not-found':
+    case 'not-found':
       page = 'errorPage';
       break;
-      case 'not-supported':
+    case 'not-supported':
       page = 'errorPageTwo';
       break;
     case 'change-data':
-        page = 'changeData';
+      page = 'changeData';
       break;
     default:
       page = 'loginPage';
