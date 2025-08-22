@@ -10,7 +10,7 @@ import App from './App';
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new App();
-  app.render();
+  // App now handles routing automatically through the constructor
 });
 
 

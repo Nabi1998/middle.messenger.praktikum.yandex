@@ -1,6 +1,6 @@
 export { default as registrationPage } from './registrationPage.hbs?raw';
 
-import { setupFormValidation } from '../../utils/validation.ts';
+import { setupFormValidation } from '../../utils/validation';
 import { serializeForm } from '../../utils/form';
 
 export function initRegistrationPage(): void {

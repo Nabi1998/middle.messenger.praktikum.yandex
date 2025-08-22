@@ -11,145 +11,143 @@ Handlebars.registerPartial('Input', Input);
 Handlebars.registerPartial('Footer', Footer);
 Handlebars.registerPartial('Link', Link);
 
-import { loginPage, initLoginPage } from './pages/loginPage/index.ts';
-import { registrationPage, initRegistrationPage } from './pages/registrationPage/index.ts';
-import { chatPage } from './pages/chatPage/index.ts';
-import { profilePage } from './pages/profilePage/index.ts';
-import { editProfilePage, initEditProfilePage } from './pages/editProfilePage/index.ts';
-import { errorPage } from './pages/errorPage/index.ts';
-import { errorPageTwo } from './pages/errorPage/index.ts';
-import { changeData, initChangeDataPage } from './pages/changeData/index.ts';
-export { initLoginPage } from './pages/loginPage/initLoginPage.ts';
-
-const Pages: Record<string, any> = {
-  loginPage,
-  registrationPage,
-  chatPage,
-  profilePage,
-  errorPage,
-  errorPageTwo,
-  editProfilePage,
-  changeData,
-};
-
-const pageInits: Record<string, (() => void) | undefined> = {
-  loginPage: initLoginPage,
-  registrationPage: initRegistrationPage,
-  editProfilePage: initEditProfilePage,
-  changeDataPage: initChangeDataPage, // добавишь функцию по аналогии
-};
+import AppController from './services/AppController';
+import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
+import ChatPage from './pages/ChatPage';
 
 export default class App {
-  private state: { currentPage: string };
+  private controller: AppController;
   private appElement: HTMLElement | null;
 
   constructor() {
-    this.state = {
-      currentPage: 'loginPage',
-    };
+    this.controller = new AppController();
     this.appElement = document.getElementById('app');
+    this.initializeViews();
+    this.setupRouting();
   }
 
-  render() {
-    const pageTemplate = Pages[this.state.currentPage];
+  private initializeViews(): void {
+    // Register all views with the controller
+    this.controller.registerView('loginPage', new LoginPage());
+    this.controller.registerView('registrationPage', new RegistrationPage());
+    this.controller.registerView('chatPage', new ChatPage());
 
-    if (!pageTemplate) {
-      console.error(`Page ${this.state.currentPage} not found`);
+    // Listen for state changes to update UI
+    this.controller.getEventBus().on('state:changed', this.handleStateChange.bind(this));
+    this.controller.getEventBus().on('error:show', this.showError.bind(this));
+    this.controller.getEventBus().on('success:show', this.showSuccess.bind(this));
+    this.controller.getEventBus().on('page:change', this.handlePageChange.bind(this));
+  }
+
+  private setupRouting(): void {
+    window.addEventListener('hashchange', this.handleRouting.bind(this));
+    window.addEventListener('load', this.handleRouting.bind(this));
+  }
+
+  private handleRouting(): void {
+    const hash = location.hash.slice(1);
+    let page: string = 'loginPage';
+
+    switch (hash) {
+      case 'register':
+        page = 'registrationPage';
+        break;
+      case 'chat':
+        page = 'chatPage';
+        break;
+      case 'profile':
+        page = 'profilePage';
+        break;
+      case 'profile-edit':
+        page = 'editProfilePage';
+        break;
+      case 'login':
+        page = 'loginPage';
+        break;
+      case 'not-found':
+        page = 'errorPage';
+        break;
+      case 'not-supported':
+        page = 'errorPageTwo';
+        break;
+      case 'change-data':
+        page = 'changeData';
+        break;
+      default:
+        page = 'loginPage';
+    }
+
+    this.controller.getEventBus().emit('page:change', page);
+  }
+
+  private handlePageChange(pageName: string): void {
+    const view = this.controller.getView(pageName);
+    if (!view) {
+      console.error(`View ${pageName} not found`);
       return;
     }
 
-    const template = Handlebars.compile(pageTemplate);
     if (this.appElement) {
-      this.appElement.innerHTML = template({});
+      // Get the template and data from the view
+      const template = view.getTemplate();
+      const data = view.getViewData();
+      
+      // Compile and render with Handlebars
+      const compiledTemplate = Handlebars.compile(template);
+      const html = compiledTemplate(data);
+      
+      this.appElement.innerHTML = html;
+      
+      // Call afterRender to setup event listeners
+      view.setupAfterRender();
     }
-
-    const initFn = pageInits[this.state.currentPage];
-    if (initFn) {
-      initFn();
-    }
-    this.attachEventListeners();
   }
 
-  private attachEventListeners() {
-    const footerLinks = document.querySelectorAll<HTMLAnchorElement>('.footer-link');
-    footerLinks.forEach((link) => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = e.target as HTMLElement;
-        const page = target.dataset.page;
-        if (page) {
-          this.changePage(page);
-        }
-      });
-    });
-    this.setupAvatarModal();
-  }
-
-  changePage(page: string) {
-    this.state.currentPage = page;
-    this.render();
-  }
-
-  private setupAvatarModal() {
-    const avatarButton = document.getElementById('open-avatar-modal');
-    const avatarModal = document.getElementById('avatar-modal');
-
-    if (!avatarButton || !avatarModal) return;
-
-    avatarButton.addEventListener('click', () => {
-      avatarModal.classList.remove('hidden');
-    });
-
-    const closeBtn = document.getElementById('close-avatar-modal');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => avatarModal.classList.add('hidden'));
+  private handleStateChange(state: any): void {
+    // Update loading states and other UI elements based on state
+    if (state.isLoading) {
+      this.showLoading();
+    } else {
+      this.hideLoading();
     }
+  }
 
-    avatarModal.addEventListener('click', (e) => {
-      if (e.target === avatarModal) {
-        avatarModal.classList.add('hidden');
-      }
-    });
+  private showError(message: string): void {
+    // Show error notification
+    console.error('Error:', message);
+    // You could implement a toast notification system here
+  }
+
+  private showSuccess(message: string): void {
+    // Show success notification
+    console.log('Success:', message);
+    // You could implement a toast notification system here
+  }
+
+  private showLoading(): void {
+    // Show loading indicator
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) {
+      loadingEl.style.display = 'block';
+    }
+  }
+
+  private hideLoading(): void {
+    // Hide loading indicator
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) {
+      loadingEl.style.display = 'none';
+    }
+  }
+
+  public getController(): AppController {
+    return this.controller;
   }
 }
 
+// Initialize the app
 const app = new App();
 
-window.addEventListener('hashchange', handleRouting);
-window.addEventListener('load', handleRouting);
-
-function handleRouting() {
-  const hash = location.hash.slice(1);
-  let page: string = 'loginPage';
-
-  switch (hash) {
-    case 'register':
-      page = 'registrationPage';
-      break;
-    case 'chat':
-      page = 'chatPage';
-      break;
-    case 'profile':
-      page = 'profilePage';
-      break;
-    case 'profile-edit':
-      page = 'editProfilePage';
-      break;
-    case 'login':
-      page = 'loginPage';
-      break;
-    case 'not-found':
-      page = 'errorPage';
-      break;
-    case 'not-supported':
-      page = 'errorPageTwo';
-      break;
-    case 'change-data':
-      page = 'changeData';
-      break;
-    default:
-      page = 'loginPage';
-  }
-
-  app.changePage(page);
-}
+// Make app available globally for debugging
+(window as any).app = app;

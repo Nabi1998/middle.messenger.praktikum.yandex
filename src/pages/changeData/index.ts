@@ -1,4 +1,4 @@
-import { setupFormValidation } from '../../utils/validation.ts';
+import { setupFormValidation } from '../../utils/validation';
 import { serializeForm } from '../../utils/form';
 
 export { default as changeData } from './changeData.hbs?raw';

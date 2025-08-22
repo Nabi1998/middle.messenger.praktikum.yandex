@@ -1,5 +1,5 @@
 import HttpClient from '../../utils/httpClient';
-import { validateField } from '../../utils/validation.ts';
+import { validateField } from '../../utils/validation';
 
 const api = new HttpClient('https://example.com/api');
 

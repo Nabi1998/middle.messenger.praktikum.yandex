@@ -124,13 +124,7 @@ export default class Block {
     });
   }
 
-  public setProps = (nextProps: BlockProps): void => {
-    if (!nextProps) {
-      return;
-    }
 
-    Object.assign(this.props, nextProps);
-  };
 
   public setLists = (nextList: Record<string, any[]>): void => {
     if (!nextList) {
@@ -238,5 +232,12 @@ export default class Block {
     if (content) {
       content.style.display = 'none';
     }
+  }
+
+  public setProps(newProps: Partial<BlockProps>): void {
+    if (!newProps) {
+      return;
+    }
+    Object.assign(this.props, newProps);
   }
 }
