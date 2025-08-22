@@ -1,4 +1,11 @@
-const validationRules = {
+type ValidationRule = {
+  regex: RegExp;
+  message: string;
+};
+
+type ValidationRules = Record<string, ValidationRule>;
+
+const validationRules: ValidationRules = {
   first_name: {
     regex: /^[A-ZА-Я][a-zа-я-]*$/,
     message: 'Первая буква заглавная, только буквы (латиница/кириллица), допустим дефис.',
@@ -19,6 +26,10 @@ const validationRules = {
     regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
     message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
   },
+  password_repeat: {
+    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
+  },
   phone: {
     regex: /^\+?\d{10,15}$/,
     message: "Телефон от 10 до 15 цифр, может начинаться с '+'.",
@@ -29,17 +40,35 @@ const validationRules = {
   },
 };
 
-export function validateField(input, errorEl) {
+export function validateField(input: HTMLInputElement, errorEl?: HTMLElement | null): boolean {
   const rule = validationRules[input.name];
   if (!rule) return true;
 
   if (!rule.regex.test(input.value)) {
-    errorEl.textContent = rule.message;
+    if (errorEl) errorEl.textContent = rule.message;
     input.classList.add('invalid');
     return false;
   }
 
-  errorEl.textContent = '';
+  if (errorEl) errorEl.textContent = '';
   input.classList.remove('invalid');
   return true;
 }
+
+export function setupFormValidation(form: HTMLFormElement): () => boolean {
+  form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+    const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+    input.addEventListener('blur', () => validateField(input, errorEl));
+  });
+
+  return () => {
+    let isValid = true;
+    form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+      const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+      if (!validateField(input, errorEl)) isValid = false;
+    });
+    return isValid;
+  };
+}
+
+

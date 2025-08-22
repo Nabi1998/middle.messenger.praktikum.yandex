@@ -40,4 +40,17 @@
       </form>
     </div>
   </div>
+
+  <div id="avatar-modal" class="edit-profile-avatar-modal hidden">
+    <div class="edit-profile-avatar-card">
+      <div class="edit-profile-avatar-title">Загрузка аватара</div>
+      <label class="edit-profile-avatar-upload">
+        Выбрать файл
+        <input type="file" class="edit-profile-avatar-input" accept="image/*" />
+      </label>
+      <div class="edit-profile-avatar-actions">
+        {{> Button id="close-avatar-modal" text="Закрыть" }}
+      </div>
+    </div>
+  </div>
 </main>
