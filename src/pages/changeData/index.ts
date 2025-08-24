@@ -26,7 +26,6 @@ export function initChangeDataPage(): void {
     }
   });
 
-  // Обработка кнопки "Назад"
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target.textContent?.includes('Назад')) {
