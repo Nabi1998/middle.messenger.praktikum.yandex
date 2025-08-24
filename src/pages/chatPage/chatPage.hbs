@@ -2,6 +2,7 @@
   <div class="chat-sidebar">
     <div class="chat-header">
       <h2>Чаты</h2>
+      <button class="profile-btn" data-page="profilePage">👤</button>
       <button class="new-chat-btn">+</button>
     </div>
     <div class="chat-list">
@@ -9,12 +10,10 @@
         <div class="chat-item" data-chat-id="{{id}}">
           <div class="chat-avatar">👤</div>
           <div class="chat-info">
-            <div class="chat-title">{{title}}</div>
+            <div class="chat-title">{{name}}</div>
             <div class="chat-last-message">{{lastMessage}}</div>
+            <div class="chat-time">{{time}}</div>
           </div>
-          {{#if unreadCount}}
-            <div class="chat-unread">{{unreadCount}}</div>
-          {{/if}}
         </div>
       {{/each}}
     </div>
@@ -30,8 +29,10 @@
     
     <div class="chat-input-area">
       <form class="message-form">
-        <input type="text" class="message-input" placeholder="Введите сообщение..." disabled>
-        <button type="submit" class="send-btn" disabled>Отправить</button>
+        <div class="input-wrapper">
+          {{> Input name="message" type="text" placeholder="Введите сообщение..." }}
+        </div>
+        <button type="submit" class="send-btn">Отправить</button>
       </form>
     </div>
   </div>

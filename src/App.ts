@@ -11,33 +11,29 @@ Handlebars.registerPartial('Input', Input);
 Handlebars.registerPartial('Footer', Footer);
 Handlebars.registerPartial('Link', Link);
 
-import AppController from './services/AppController';
-import LoginPage from './pages/LoginPage';
-import RegistrationPage from './pages/RegistrationPage';
-import ChatPage from './pages/ChatPage';
+// Импортируем страницы
+import loginPage from './pages/loginPage/loginPage.hbs?raw';
+import registrationPage from './pages/registrationPage/registrationPage.hbs?raw';
+import chatPage from './pages/chatPage/chatPage.hbs?raw';
+import profilePage from './pages/profilePage/profilePage.hbs?raw';
+import editProfilePage from './pages/editProfilePage/editProfilePage.hbs?raw';
+import changeData from './pages/changeData/changeData.hbs?raw';
+import errorPage from './pages/errorPage/errorPage.hbs?raw';
+import errorPageTwo from './pages/errorPage/errorPageTwo.hbs?raw';
+
+// Импортируем функции инициализации
+import { initLoginPage } from './pages/loginPage/initLoginPage';
+import { initRegistrationPage } from './pages/registrationPage/index';
+import { initChatPage } from './pages/chatPage/index';
+import { initEditProfilePage } from './pages/editProfilePage/index';
+import { initChangeDataPage } from './pages/changeData/index';
 
 export default class App {
-  private controller: AppController;
   private appElement: HTMLElement | null;
 
   constructor() {
-    this.controller = new AppController();
     this.appElement = document.getElementById('app');
-    this.initializeViews();
     this.setupRouting();
-  }
-
-  private initializeViews(): void {
-    // Register all views with the controller
-    this.controller.registerView('loginPage', new LoginPage());
-    this.controller.registerView('registrationPage', new RegistrationPage());
-    this.controller.registerView('chatPage', new ChatPage());
-
-    // Listen for state changes to update UI
-    this.controller.getEventBus().on('state:changed', this.handleStateChange.bind(this));
-    this.controller.getEventBus().on('error:show', this.showError.bind(this));
-    this.controller.getEventBus().on('success:show', this.showSuccess.bind(this));
-    this.controller.getEventBus().on('page:change', this.handlePageChange.bind(this));
   }
 
   private setupRouting(): void {
@@ -78,76 +74,129 @@ export default class App {
         page = 'loginPage';
     }
 
-    this.controller.getEventBus().emit('page:change', page);
+    this.renderPage(page);
   }
 
-  private handlePageChange(pageName: string): void {
-    const view = this.controller.getView(pageName);
-    if (!view) {
-      console.error(`View ${pageName} not found`);
-      return;
+  private renderPage(pageName: string): void {
+    if (!this.appElement) return;
+
+    let template: string;
+    let data: any = {};
+
+    switch (pageName) {
+      case 'loginPage':
+        template = loginPage;
+        break;
+      case 'registrationPage':
+        template = registrationPage;
+        break;
+      case 'chatPage':
+        template = chatPage;
+        data = {
+          chats: [
+            { name: 'Чат 1', lastMessage: 'Привет!', time: '12:00' },
+            { name: 'Чат 2', lastMessage: 'Как дела?', time: '11:30' }
+          ]
+        };
+        break;
+      case 'profilePage':
+        template = profilePage;
+        data = {
+          user: {
+            firstName: 'Иван',
+            secondName: 'Иванов',
+            displayName: 'ivan',
+            email: 'ivan@example.com',
+            phone: '+7 999 123-45-67'
+          }
+        };
+        break;
+      case 'editProfilePage':
+        template = editProfilePage;
+        data = {
+          user: {
+            firstName: 'Иван',
+            secondName: 'Иванов',
+            displayName: 'ivan',
+            email: 'ivan@example.com',
+            phone: '+7 999 123-45-67'
+          }
+        };
+        break;
+      case 'changeData':
+        template = changeData;
+        break;
+      case 'errorPage':
+        template = errorPage;
+        data = { errorCode: '404', errorText: 'Не туда попали' };
+        break;
+      case 'errorPageTwo':
+        template = errorPageTwo;
+        data = { errorCode: '500', errorText: 'Мы уже фиксим' };
+        break;
+      default:
+        template = loginPage;
     }
 
-    if (this.appElement) {
-      // Get the template and data from the view
-      const template = view.getTemplate();
-      const data = view.getViewData();
+    // Компилируем и рендерим шаблон
+    const compiledTemplate = Handlebars.compile(template);
+    const html = compiledTemplate(data);
+    this.appElement.innerHTML = html;
+
+    // Инициализируем страницу
+    this.initPage(pageName);
+  }
+
+  private initPage(pageName: string): void {
+    switch (pageName) {
+      case 'loginPage':
+        initLoginPage();
+        break;
+      case 'registrationPage':
+        initRegistrationPage();
+        break;
+      case 'chatPage':
+        initChatPage();
+        break;
+      case 'editProfilePage':
+        initEditProfilePage();
+        break;
+      case 'changeData':
+        initChangeDataPage();
+        break;
+    }
+
+    // Настраиваем навигацию для всех страниц
+    this.setupNavigation();
+  }
+
+  private setupNavigation(): void {
+    // Обработчики для навигации
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
       
-      // Compile and render with Handlebars
-      const compiledTemplate = Handlebars.compile(template);
-      const html = compiledTemplate(data);
-      
-      this.appElement.innerHTML = html;
-      
-      // Call afterRender to setup event listeners
-      view.setupAfterRender();
-    }
-  }
+      if (target.matches('[data-page]')) {
+        const page = target.getAttribute('data-page');
+        if (page) {
+          location.hash = page;
+        }
+      }
 
-  private handleStateChange(state: any): void {
-    // Update loading states and other UI elements based on state
-    if (state.isLoading) {
-      this.showLoading();
-    } else {
-      this.hideLoading();
-    }
-  }
+      // Обработка кнопки "Назад"
+      if (target.matches('.back-button') || target.textContent?.includes('Назад')) {
+        history.back();
+      }
 
-  private showError(message: string): void {
-    // Show error notification
-    console.error('Error:', message);
-    // You could implement a toast notification system here
-  }
-
-  private showSuccess(message: string): void {
-    // Show success notification
-    console.log('Success:', message);
-    // You could implement a toast notification system here
-  }
-
-  private showLoading(): void {
-    // Show loading indicator
-    const loadingEl = document.getElementById('loading');
-    if (loadingEl) {
-      loadingEl.style.display = 'block';
-    }
-  }
-
-  private hideLoading(): void {
-    // Hide loading indicator
-    const loadingEl = document.getElementById('loading');
-    if (loadingEl) {
-      loadingEl.style.display = 'none';
-    }
-  }
-
-  public getController(): AppController {
-    return this.controller;
+      // Обработка логаута
+      if (target.matches('.logout-button') || target.textContent?.includes('Выйти')) {
+        location.hash = 'login';
+      }
+    });
   }
 }
 
-// Initialize the app
+// Инициализируем приложение
 const app = new App();
 
-// Make app available globally for debugging
+// Делаем доступным глобально для отладки
 (window as any).app = app;

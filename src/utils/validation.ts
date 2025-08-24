@@ -38,6 +38,23 @@ const validationRules: ValidationRules = {
     regex: /^(?!\s*$).+/,
     message: 'Сообщение не должно быть пустым.',
   },
+  // Добавляем недостающие правила
+  oldPassword: {
+    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
+  },
+  newPassword: {
+    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
+  },
+  repeatPassword: {
+    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
+  },
+  display_name: {
+    regex: /^[A-ZА-Я][a-zа-я-]*$/,
+    message: 'Первая буква заглавная, только буквы (латиница/кириллица), допустим дефис.',
+  },
 };
 
 export function validateField(input: HTMLInputElement, errorEl?: HTMLElement | null): boolean {
@@ -58,7 +75,19 @@ export function validateField(input: HTMLInputElement, errorEl?: HTMLElement | n
 export function setupFormValidation(form: HTMLFormElement): () => boolean {
   form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
     const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+    
+    // Валидация при потере фокуса
     input.addEventListener('blur', () => validateField(input, errorEl));
+    
+    // Валидация при вводе (в реальном времени)
+    input.addEventListener('input', () => {
+      if (input.value.trim() === '') {
+        if (errorEl) errorEl.textContent = '';
+        input.classList.remove('invalid');
+      } else {
+        validateField(input, errorEl);
+      }
+    });
   });
 
   return () => {

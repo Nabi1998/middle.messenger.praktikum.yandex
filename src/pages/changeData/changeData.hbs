@@ -6,19 +6,19 @@
       <form class='change-password-form'>
         <div class='form-row'>
           <label for='old-password' class='form-label'>Старый пароль</label>
-          <input type='password' id='old-password' class='form-input' name='oldPassword' />
+          {{> Input id="old-password" name="oldPassword" type="password" }}
         </div>
         <div class='form-row'>
           <label for='new-password' class='form-label'>Новый пароль</label>
-          <input type='password' id='new-password' class='form-input' name='newPassword' />
+          {{> Input id="new-password" name="newPassword" type="password" }}
         </div>
         <div class='form-row'>
           <label for='repeat-password' class='form-label'>Повторите новый пароль</label>
-          <input type='password' id='repeat-password' class='form-input' name='repeatPassword' />
+          {{> Input id="repeat-password" name="repeatPassword" type="password" }}
         </div>
 
         <div class='change-password-actions'>
-          <button type='submit' class='save-button'>Сохранить</button>
+          {{> Button type="submit" text="Сохранить" }}
         </div>
       </form>
     </div>

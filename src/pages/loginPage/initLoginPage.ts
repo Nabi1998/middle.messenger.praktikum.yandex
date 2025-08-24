@@ -1,34 +1,29 @@
-import HttpClient from '../../utils/httpClient';
-import { validateField } from '../../utils/validation';
-
-const api = new HttpClient('https://example.com/api');
+import { setupFormValidation } from '../../utils/validation';
 
 export function initLoginPage(): void {
   const form = document.querySelector<HTMLFormElement>('.login-form');
   if (!form) return;
 
-  form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
-    input.addEventListener('blur', () => {
-      const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
-      validateField(input, errorEl);
-    });
-  });
+  // Настраиваем валидацию для всех полей
+  const validateAll = setupFormValidation(form);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const emailInput = form.querySelector<HTMLInputElement>('input[name="email"]');
+    const loginInput = form.querySelector<HTMLInputElement>('input[name="login"]');
     const passwordInput = form.querySelector<HTMLInputElement>('input[name="password"]');
 
-    const email = emailInput?.value ?? '';
+    const login = loginInput?.value ?? '';
     const password = passwordInput?.value ?? '';
 
-    try {
-      const response = await api.post('/login', { email, password });
-      console.log('Успешный вход:', response);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('Ошибка:', message);
+    console.log('Попытка входа:', { login, password });
+    
+    // Проверяем валидацию
+    if (validateAll()) {
+      console.log('✅ Вход выполнен успешно');
+      location.hash = 'chat';
+    } else {
+      console.log('❌ Ошибка валидации');
     }
   });
 }

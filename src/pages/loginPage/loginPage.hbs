@@ -19,17 +19,17 @@
 <main class="app-main">
   <div class="login-card">
     <h1 class="login-title">Вход</h1>
-    <form class="login-form" method="POST" action="/login">
-      <label class="login-label" for="login">Логин</label>
-      {{> Input id="login" name="login" type="text" placeholder="" autocomplete="username"}}
+          <form class="login-form" method="POST" action="/login">
+        <label class="login-label" for="login">Логин</label>
+        {{> Input id="login" name="login" type="text" placeholder="" autocomplete="username"}}
 
-      <label class="login-label" for="password">Пароль</label>
-      {{> Input id="password" name="password" type="password" autocomplete="current-password"}}
+        <label class="login-label" for="password">Пароль</label>
+        {{> Input id="password" name="password" type="password" autocomplete="current-password"}}
 
-      {{> Button type="submit" id="login-button" text="Авторизоваться"}}
+        {{> Button type="submit" id="login-button" text="Авторизоваться"}}
 
       <div class="login-footer">
-        <a href="#" class="footer-link" data-page="registrationPage">Уже есть аккаунт?</a>
+        <a href="#" class="footer-link" data-page="registrationPage">Нет аккаунта?</a>
       </div>
     </form>
   </div>
