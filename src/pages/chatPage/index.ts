@@ -3,17 +3,15 @@ export { default as chatPage } from './chatPage.hbs?raw';
 import { setupFormValidation } from '../../utils/validation';
 
 export function initChatPage(): void {
-  // Инициализация страницы чата
   console.log('Chat page initialized');
-  
-  // Настройка валидации для формы сообщений
+
   const messageForm = document.querySelector<HTMLFormElement>('.message-form');
   if (messageForm) {
     const validateAll = setupFormValidation(messageForm);
-    
+
     messageForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      
+
       // Проверяем валидацию
       if (validateAll()) {
         const messageInput = messageForm.querySelector<HTMLInputElement>('input[name="message"]');
@@ -31,19 +29,14 @@ export function initChatPage(): void {
     });
   }
 
-  // Настройка выбора чата
   const chatItems = document.querySelectorAll('.chat-item');
   chatItems.forEach((item, index) => {
     item.addEventListener('click', () => {
-      // Убираем активный класс со всех чатов
       chatItems.forEach(i => i.classList.remove('active'));
-      // Добавляем активный класс к выбранному чату
       item.classList.add('active');
-      
-      // Показываем область сообщений
+
       const placeholder = document.querySelector('.chat-placeholder');
-      const messagesArea = document.querySelector('.chat-messages');
-      
+
       if (placeholder) {
         placeholder.innerHTML = `
           <div class="active-chat">
@@ -55,12 +48,11 @@ export function initChatPage(): void {
           </div>
         `;
       }
-      
+
       console.log('Выбран чат:', item.querySelector('.chat-title')?.textContent);
     });
   });
 
-  // Настройка кнопки профиля
   const profileBtn = document.querySelector('.profile-btn');
   if (profileBtn) {
     profileBtn.addEventListener('click', () => {
