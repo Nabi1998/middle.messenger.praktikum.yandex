@@ -30,7 +30,7 @@ export function initChatPage(): void {
   }
 
   const chatItems = document.querySelectorAll('.chat-item');
-  chatItems.forEach((item, index) => {
+  chatItems.forEach((item) => {
     item.addEventListener('click', () => {
       chatItems.forEach(i => i.classList.remove('active'));
       item.classList.add('active');
