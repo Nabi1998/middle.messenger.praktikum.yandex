@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import AppController from './AppController';
 import View from './View';
 
-// Mock View class for testing
+
 class MockView extends View {
   protected template(): string {
     return '<div>Mock View</div>';
@@ -23,7 +23,7 @@ describe('AppController', () => {
   it('should register and retrieve views', () => {
     const mockView = new MockView();
     controller.registerView('test', mockView);
-    
+
     const retrievedView = controller.getView('test');
     expect(retrievedView).toBe(mockView);
   });
