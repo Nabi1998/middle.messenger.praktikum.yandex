@@ -1,4 +1,4 @@
-import { HttpClient } from '../utils/httpClient';
+import HttpClient from '../utils/httpClient';
 
 export interface User {
   id: string;
@@ -34,20 +34,20 @@ export default class UserService {
 
   async login(data: LoginData): Promise<User> {
     try {
-      const response = await this.http.post<User>('/auth/signin', { body: data });
+      const response = await this.http.post<User>('/auth/signin', data);
       this.currentUser = response;
       return response;
-    } catch {
+    } catch (error) {
       throw new Error('Login failed');
     }
   }
 
   async register(data: RegistrationData): Promise<User> {
     try {
-      const response = await this.http.post<User>('/auth/signup', { body: data });
+      const response = await this.http.post<User>('/auth/signup', data);
       this.currentUser = response;
       return response;
-    } catch {
+    } catch (error) {
       throw new Error('Registration failed');
     }
   }
@@ -56,7 +56,7 @@ export default class UserService {
     try {
       await this.http.post('/auth/logout');
       this.currentUser = null;
-    } catch {
+    } catch (error) {
       throw new Error('Logout failed');
     }
   }
@@ -67,18 +67,21 @@ export default class UserService {
     }
 
     try {
-      const response = await this.http.put<User>('/user/profile', { body: data });
+      const response = await this.http.put<User>(`/user/profile`, data);
       this.currentUser = { ...this.currentUser, ...response };
       return this.currentUser;
-    } catch {
+    } catch (error) {
       throw new Error('Profile update failed');
     }
   }
 
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
     try {
-      await this.http.put('/user/password', { body: { oldPassword, newPassword } });
-    } catch {
+      await this.http.put('/user/password', {
+        oldPassword,
+        newPassword
+      });
+    } catch (error) {
       throw new Error('Password change failed');
     }
   }

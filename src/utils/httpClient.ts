@@ -15,10 +15,7 @@ const METHODS = {
   PATCH: 'PATCH',
 } as const;
 
-type HTTPMethod = <R = unknown>(
-  url: string,
-  options?: RequestOptions
-) => Promise<R>;
+type HTTPMethod = <R = unknown>(url: string, options?: RequestOptions) => Promise<R>;
 
 export class HttpClient {
   private readonly baseUrl: string;
@@ -42,11 +39,7 @@ export class HttpClient {
     return fullUrl;
   }
 
-  private request<R = unknown>(
-    url: string,
-    method: HttpMethodType,
-    options: RequestOptions = {}
-  ): Promise<R> {
+  private request<R = unknown>(url: string, method: HttpMethodType, options: RequestOptions = {}): Promise<R> {
     const { headers = {}, body = null, query = null } = options;
     const fullUrl = this.buildUrl(url, query);
 
@@ -62,8 +55,9 @@ export class HttpClient {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             resolve(JSON.parse(xhr.responseText) as R);
-          } catch {
-            resolve(xhr.responseText as unknown as R);
+          } catch (err) {
+            console.error('Ошибка парсинга JSON:', err);
+            resolve((xhr.responseText as unknown) as R);
           }
         } else {
           reject(new Error(`HTTP error! Status: ${xhr.status}`));
@@ -86,15 +80,10 @@ export class HttpClient {
     });
   }
 
-  public get: HTTPMethod = (url, options = {}) =>
-    this.request(url, METHODS.GET, options);
 
-  public post: HTTPMethod = (url, options = {}) =>
-    this.request(url, METHODS.POST, options);
-
-  public put: HTTPMethod = (url, options = {}) =>
-    this.request(url, METHODS.PUT, options);
-
-  public delete: HTTPMethod = (url, options = {}) =>
-    this.request(url, METHODS.DELETE, options);
+  public get: HTTPMethod = (url, options = {}) => this.request(url, METHODS.GET, options);
+  public post: HTTPMethod = (url, options = {}) => this.request(url, METHODS.POST, options);
+  public put: HTTPMethod = (url, options = {}) => this.request(url, METHODS.PUT, options);
+  public delete: HTTPMethod = (url, options = {}) => this.request(url, METHODS.DELETE, options);
 }
+
