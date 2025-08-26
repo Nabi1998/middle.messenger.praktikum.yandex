@@ -86,3 +86,4 @@ export class HttpClient {
   public put: HTTPMethod = (url, options = {}) => this.request(url, METHODS.PUT, options);
   public delete: HTTPMethod = (url, options = {}) => this.request(url, METHODS.DELETE, options);
 }
+
