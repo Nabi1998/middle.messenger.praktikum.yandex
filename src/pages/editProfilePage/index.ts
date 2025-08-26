@@ -12,17 +12,17 @@ export function initEditProfilePage(): void {
   // Обработка отправки формы
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    
+
     // Проверяем валидацию
     if (validateAll()) {
-      console.log('✅ Данные профиля:', data);
+      console.warn('✅ Данные профиля:', data);
       // Здесь можно отправить данные на сервер
       location.hash = 'profile';
     } else {
-      console.log('❌ Ошибка валидации профиля');
+      console.error('❌ Ошибка валидации профиля');
     }
   });
 

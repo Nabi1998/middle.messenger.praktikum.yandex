@@ -3,8 +3,6 @@ export { default as chatPage } from './chatPage.hbs?raw';
 import { setupFormValidation } from '../../utils/validation';
 
 export function initChatPage(): void {
-  console.log('Chat page initialized');
-
   const messageForm = document.querySelector<HTMLFormElement>('.message-form');
   if (messageForm) {
     const validateAll = setupFormValidation(messageForm);
@@ -16,7 +14,7 @@ export function initChatPage(): void {
       if (validateAll()) {
         const messageInput = messageForm.querySelector<HTMLInputElement>('input[name="message"]');
         if (messageInput && messageInput.value.trim()) {
-          console.log('✅ Отправка сообщения:', messageInput.value);
+          console.warn('✅ Отправка сообщения:', messageInput.value);
           messageInput.value = '';
           // Очищаем ошибки после отправки
           const errorEl = messageInput.parentElement?.querySelector<HTMLElement>('.error-message');
@@ -24,7 +22,7 @@ export function initChatPage(): void {
           messageInput.classList.remove('invalid');
         }
       } else {
-        console.log('❌ Ошибка валидации сообщения');
+        console.error('❌ Ошибка валидации сообщения');
       }
     });
   }
@@ -49,7 +47,7 @@ export function initChatPage(): void {
         `;
       }
 
-      console.log('Выбран чат:', item.querySelector('.chat-title')?.textContent);
+      console.warn('Выбран чат:', item.querySelector('.chat-title')?.textContent);
     });
   });
 

@@ -12,17 +12,17 @@ export function initChangeDataPage(): void {
   // Обработка отправки формы
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    
+
     // Проверяем валидацию и совпадение паролей
     if (validateAll() && passwordsMatch(form)) {
-      console.log('✅ Пароль успешно изменен:', data);
+      console.warn('✅ Пароль успешно изменен:', data);
       // Здесь можно отправить данные на сервер
       location.hash = 'profile';
     } else {
-      console.log('❌ Ошибка валидации смены пароля');
+      console.error('❌ Ошибка валидации смены пароля');
     }
   });
 
@@ -38,12 +38,12 @@ function passwordsMatch(form: HTMLFormElement): boolean {
   const newPassword = form.querySelector<HTMLInputElement>('input[name="newPassword"]')?.value ?? '';
   const repeatPassword = form.querySelector<HTMLInputElement>('input[name="repeatPassword"]')?.value ?? '';
   const errorEl = form.querySelector<HTMLInputElement>('input[name="repeatPassword"]')?.parentElement?.querySelector<HTMLElement>('.error-message');
-  
+
   if (newPassword && repeatPassword && newPassword !== repeatPassword) {
     if (errorEl) errorEl.textContent = 'Пароли не совпадают';
     return false;
   }
-  
+
   if (errorEl) errorEl.textContent = '';
   return true;
 }

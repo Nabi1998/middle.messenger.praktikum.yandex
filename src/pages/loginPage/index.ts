@@ -16,9 +16,9 @@ export function initLoginPage(): void {
 
     if (isValid) {
       const data = serializeForm(form);
-      console.log('✅ Данные формы:', data);
+      console.warn('✅ Данные формы:', data);
     } else {
-      console.log('❌ Ошибка валидации');
+      console.error('❌ Ошибка валидации');
     }
   });
 }
