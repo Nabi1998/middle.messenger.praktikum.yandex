@@ -24,7 +24,7 @@ export interface RegistrationData {
   password: string;
 }
 
-export default class UserService {
+export class UserService {
   private http: HttpClient;
   private currentUser: User | null = null;
 
@@ -33,54 +33,31 @@ export default class UserService {
   }
 
   async login(data: LoginData): Promise<User> {
-    try {
-      const response = await this.http.post<User>('/auth/signin', { body: data });
-      this.currentUser = response;
-      return response;
-    } catch {
-      throw new Error('Login failed');
-    }
+    const response = await this.http.post<User>('/auth/signin', { body: data });
+    this.currentUser = response;
+    return response;
   }
 
   async register(data: RegistrationData): Promise<User> {
-    try {
-      const response = await this.http.post<User>('/auth/signup', { body: data });
-      this.currentUser = response;
-      return response;
-    } catch {
-      throw new Error('Registration failed');
-    }
+    const response = await this.http.post<User>('/auth/signup', { body: data });
+    this.currentUser = response;
+    return response;
   }
 
   async logout(): Promise<void> {
-    try {
-      await this.http.post('/auth/logout');
-      this.currentUser = null;
-    } catch {
-      throw new Error('Logout failed');
-    }
+    await this.http.post('/auth/logout');
+    this.currentUser = null;
   }
 
   async updateProfile(data: Partial<User>): Promise<User> {
-    if (!this.currentUser) {
-      throw new Error('User not authenticated');
-    }
-
-    try {
-      const response = await this.http.put<User>(`/user/profile`, { body: data });
-      this.currentUser = { ...this.currentUser!, ...response };
-      return this.currentUser;
-    } catch {
-      throw new Error('Profile update failed');
-    }
+    if (!this.currentUser) throw new Error('User not authenticated');
+    const response = await this.http.put<User>('/user/profile', { body: data });
+    this.currentUser = { ...this.currentUser, ...response };
+    return this.currentUser;
   }
 
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
-    try {
-      await this.http.put('/user/password', { body: { oldPassword, newPassword } });
-    } catch {
-      throw new Error('Password change failed');
-    }
+    await this.http.put('/user/password', { body: { oldPassword, newPassword } });
   }
 
   getCurrentUser(): User | null {
