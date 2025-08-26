@@ -80,7 +80,7 @@ export default abstract class Block<
   }
 
   protected componentDidUpdate(oldProps: Props, newProps: Props): boolean {
-    console.log('componentDidUpdate', oldProps, newProps);
+    console.warn('componentDidUpdate', oldProps, newProps);
     return true;
   }
 
@@ -133,7 +133,7 @@ export default abstract class Block<
   }
 
   private _render(): void {
-    console.log('Render');
+    console.warn('Render');
 
     // удаляем старые события перед ререндером
     this._removeEvents();

@@ -49,7 +49,7 @@ export function initEditProfilePage(): void {
     fileInput.addEventListener('change', (e) => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files[0]) {
-        console.log('Выбран файл:', target.files[0].name);
+        console.warn('Выбран файл:', target.files[0].name);
         // Здесь можно загрузить файл на сервер
       }
     });

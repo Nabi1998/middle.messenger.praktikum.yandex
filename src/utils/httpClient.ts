@@ -55,7 +55,8 @@ export class HttpClient {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             resolve(JSON.parse(xhr.responseText) as R);
-          } catch (_e) {
+          } catch (err) {
+            console.error('Ошибка парсинга JSON:', err);
             resolve((xhr.responseText as unknown) as R);
           }
         } else {
@@ -79,7 +80,7 @@ export class HttpClient {
     });
   }
 
-  // 🔹 Методы с использованием общего типа HTTPMethod
+
   public get: HTTPMethod = (url, options = {}) => this.request(url, METHODS.GET, options);
   public post: HTTPMethod = (url, options = {}) => this.request(url, METHODS.POST, options);
   public put: HTTPMethod = (url, options = {}) => this.request(url, METHODS.PUT, options);

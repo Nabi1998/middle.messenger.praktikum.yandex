@@ -37,7 +37,7 @@ export default class UserService {
       const response = await this.http.post<User>('/auth/signin', data);
       this.currentUser = response;
       return response;
-    } catch (error) {
+    } catch {
       throw new Error('Login failed');
     }
   }
@@ -47,7 +47,7 @@ export default class UserService {
       const response = await this.http.post<User>('/auth/signup', data);
       this.currentUser = response;
       return response;
-    } catch (error) {
+    } catch {
       throw new Error('Registration failed');
     }
   }
@@ -56,7 +56,7 @@ export default class UserService {
     try {
       await this.http.post('/auth/logout');
       this.currentUser = null;
-    } catch (error) {
+    } catch {
       throw new Error('Logout failed');
     }
   }
@@ -67,10 +67,10 @@ export default class UserService {
     }
 
     try {
-      const response = await this.http.put<User>(`/user/profile`, data);
+      const response = await this.http.put<User>('/user/profile', data);
       this.currentUser = { ...this.currentUser, ...response };
       return this.currentUser;
-    } catch (error) {
+    } catch {
       throw new Error('Profile update failed');
     }
   }
@@ -81,7 +81,7 @@ export default class UserService {
         oldPassword,
         newPassword
       });
-    } catch (error) {
+    } catch {
       throw new Error('Password change failed');
     }
   }

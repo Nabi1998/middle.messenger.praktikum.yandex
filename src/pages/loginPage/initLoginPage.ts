@@ -16,14 +16,14 @@ export function initLoginPage(): void {
     const login = loginInput?.value ?? '';
     const password = passwordInput?.value ?? '';
 
-    console.log('Попытка входа:', { login, password });
-    
+    console.warn('Попытка входа:', { login, password });
+
     // Проверяем валидацию
     if (validateAll()) {
-      console.log('✅ Вход выполнен успешно');
+      console.warn('✅ Вход выполнен успешно');
       location.hash = 'chat';
     } else {
-      console.log('❌ Ошибка валидации');
+      console.error('❌ Ошибка валидации');
     }
   });
 }
