@@ -34,7 +34,7 @@ export default class UserService {
 
   async login(data: LoginData): Promise<User> {
     try {
-      const response = await this.http.post<User>('/auth/signin', data);
+      const response = await this.http.post<User>('/auth/signin', { body: data });
       this.currentUser = response;
       return response;
     } catch {
@@ -44,7 +44,7 @@ export default class UserService {
 
   async register(data: RegistrationData): Promise<User> {
     try {
-      const response = await this.http.post<User>('/auth/signup', data);
+      const response = await this.http.post<User>('/auth/signup', { body: data });
       this.currentUser = response;
       return response;
     } catch {
@@ -67,7 +67,7 @@ export default class UserService {
     }
 
     try {
-      const response = await this.http.put<User>(`/user/profile`, data);
+      const response = await this.http.put<User>(`/user/profile`, { body: data });
       this.currentUser = { ...this.currentUser!, ...response };
       return this.currentUser;
     } catch {
@@ -77,7 +77,7 @@ export default class UserService {
 
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
     try {
-      await this.http.put('/user/password', { oldPassword, newPassword });
+      await this.http.put('/user/password', { body: { oldPassword, newPassword } });
     } catch {
       throw new Error('Password change failed');
     }
