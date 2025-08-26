@@ -54,7 +54,7 @@ export default class UserService {
 
   async logout(): Promise<void> {
     try {
-      await this.http.post('/auth/logout');
+      await this.http.post('/auth/logout', {}); // пустой объект options
       this.currentUser = null;
     } catch {
       throw new Error('Logout failed');
