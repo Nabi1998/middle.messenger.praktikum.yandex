@@ -1,4 +1,4 @@
-import HttpClient from '../utils/httpClient';
+import { HttpClient } from '../utils/httpClient';
 
 export interface User {
   id: string;
@@ -34,20 +34,20 @@ export default class UserService {
 
   async login(data: LoginData): Promise<User> {
     try {
-      const response = await this.http.post<User>('/auth/signin', data);
+      const response = await this.http.post<User>('/auth/signin', { body: data });
       this.currentUser = response;
       return response;
-    } catch (error) {
+    } catch {
       throw new Error('Login failed');
     }
   }
 
   async register(data: RegistrationData): Promise<User> {
     try {
-      const response = await this.http.post<User>('/auth/signup', data);
+      const response = await this.http.post<User>('/auth/signup', { body: data });
       this.currentUser = response;
       return response;
-    } catch (error) {
+    } catch {
       throw new Error('Registration failed');
     }
   }
@@ -56,32 +56,27 @@ export default class UserService {
     try {
       await this.http.post('/auth/logout');
       this.currentUser = null;
-    } catch (error) {
+    } catch {
       throw new Error('Logout failed');
     }
   }
 
   async updateProfile(data: Partial<User>): Promise<User> {
-    if (!this.currentUser) {
-      throw new Error('User not authenticated');
-    }
+    if (!this.currentUser) throw new Error('User not authenticated');
 
     try {
-      const response = await this.http.put<User>(`/user/profile`, data);
+      const response = await this.http.put<User>('/user/profile', { body: data });
       this.currentUser = { ...this.currentUser, ...response };
       return this.currentUser;
-    } catch (error) {
+    } catch {
       throw new Error('Profile update failed');
     }
   }
 
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
     try {
-      await this.http.put('/user/password', {
-        oldPassword,
-        newPassword
-      });
-    } catch (error) {
+      await this.http.put('/user/password', { body: { oldPassword, newPassword } });
+    } catch {
       throw new Error('Password change failed');
     }
   }
