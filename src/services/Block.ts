@@ -80,7 +80,7 @@ export default abstract class Block<
   }
 
   protected componentDidUpdate(oldProps: Props, newProps: Props): boolean {
-    console.warn('componentDidUpdate', oldProps, newProps);
+    console.error('componentDidUpdate', oldProps, newProps);
     return true;
   }
 
@@ -133,9 +133,8 @@ export default abstract class Block<
   }
 
   private _render(): void {
-    console.warn('Render');
+    console.error('Render');
 
-    // удаляем старые события перед ререндером
     this._removeEvents();
 
     const propsAndStubs = { ...this.props };
@@ -186,20 +185,18 @@ export default abstract class Block<
   }
 
   private _makePropsProxy(props: Record<string, any>): Record<string, any> {
-    const self = this;
-
     return new Proxy(props, {
-      get(target: any, prop: string) {
+      get: (target: any, prop: string) => {
         const value = target[prop];
         return typeof value === 'function' ? value.bind(target) : value;
       },
-      set(target: any, prop: string, value: any) {
+      set: (target: any, prop: string, value: any) => {
         const oldTarget = { ...target };
         target[prop] = value;
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
+        this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
-      deleteProperty() {
+      deleteProperty: () => {
         throw new Error('No access');
       },
     });
