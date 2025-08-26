@@ -1,4 +1,4 @@
-import HttpClient from '../utils/httpClient';
+import { HttpClient } from '../utils/httpClient';
 
 export interface User {
   id: string;
@@ -67,8 +67,8 @@ export default class UserService {
     }
 
     try {
-      const response = await this.http.put<User>('/user/profile', data);
-      this.currentUser = { ...this.currentUser, ...response };
+      const response = await this.http.put<User>(`/user/profile`, data);
+      this.currentUser = { ...this.currentUser!, ...response };
       return this.currentUser;
     } catch {
       throw new Error('Profile update failed');
@@ -77,10 +77,7 @@ export default class UserService {
 
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
     try {
-      await this.http.put('/user/password', {
-        oldPassword,
-        newPassword
-      });
+      await this.http.put('/user/password', { oldPassword, newPassword });
     } catch {
       throw new Error('Password change failed');
     }
