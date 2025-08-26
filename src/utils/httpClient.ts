@@ -1,38 +1,49 @@
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+export type HttpMethodType = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface RequestOptions {
-  method?: HttpMethod;
   headers?: Record<string, string>;
   body?: unknown;
   query?: Record<string, string | number | boolean | null | undefined> | null;
+  timeout?: number;
 }
 
-export default class HttpClient {
+const METHODS = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
+  PATCH: 'PATCH',
+} as const;
+
+type HTTPMethod = <R = unknown>(url: string, options?: RequestOptions) => Promise<R>;
+
+export class HttpClient {
   private readonly baseUrl: string;
 
   constructor(baseUrl: string = '') {
     this.baseUrl = baseUrl;
   }
 
-  request<TResponse = unknown>(url: string, options: RequestOptions = {}): Promise<TResponse> {
-    const { method = 'GET', headers = {}, body = null, query = null } = options;
-
-    return new Promise<TResponse>((resolve, reject) => {
-      let fullUrl = this.baseUrl + url;
-
-      if (query && typeof query === 'object') {
-        const params = new URLSearchParams();
-        Object.entries(query).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            params.append(key, String(value));
-          }
-        });
-        const queryString = params.toString();
-        if (queryString) {
-          fullUrl += `?${queryString}`;
+  private buildUrl(url: string, query?: RequestOptions['query']): string {
+    let fullUrl = this.baseUrl + url;
+    if (query && typeof query === 'object') {
+      const params = new URLSearchParams();
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          params.append(key, String(value));
         }
-      }
+      });
+      const queryString = params.toString();
+      if (queryString) fullUrl += `?${queryString}`;
+    }
+    return fullUrl;
+  }
 
+  private request<R = unknown>(url: string, method: HttpMethodType, options: RequestOptions = {}): Promise<R> {
+    const { headers = {}, body = null, query = null } = options;
+    const fullUrl = this.buildUrl(url, query);
+
+    return new Promise<R>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open(method, fullUrl);
 
@@ -43,9 +54,9 @@ export default class HttpClient {
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
-            resolve(JSON.parse(xhr.responseText) as TResponse);
+            resolve(JSON.parse(xhr.responseText) as R);
           } catch (_e) {
-            resolve((xhr.responseText as unknown) as TResponse);
+            resolve((xhr.responseText as unknown) as R);
           }
         } else {
           reject(new Error(`HTTP error! Status: ${xhr.status}`));
@@ -68,21 +79,9 @@ export default class HttpClient {
     });
   }
 
-  get<TResponse = unknown>(url: string, query: RequestOptions['query'] = {}, headers: Record<string, string> = {}) {
-    return this.request<TResponse>(url, { method: 'GET', query, headers });
-  }
-
-  post<TResponse = unknown>(url: string, body: unknown = {}, headers: Record<string, string> = {}) {
-    return this.request<TResponse>(url, { method: 'POST', body, headers });
-  }
-
-  put<TResponse = unknown>(url: string, body: unknown = {}, headers: Record<string, string> = {}) {
-    return this.request<TResponse>(url, { method: 'PUT', body, headers });
-  }
-
-  delete<TResponse = unknown>(url: string, body: unknown = {}, headers: Record<string, string> = {}) {
-    return this.request<TResponse>(url, { method: 'DELETE', body, headers });
-  }
+  // 🔹 Методы с использованием общего типа HTTPMethod
+  public get: HTTPMethod = (url, options = {}) => this.request(url, METHODS.GET, options);
+  public post: HTTPMethod = (url, options = {}) => this.request(url, METHODS.POST, options);
+  public put: HTTPMethod = (url, options = {}) => this.request(url, METHODS.PUT, options);
+  public delete: HTTPMethod = (url, options = {}) => this.request(url, METHODS.DELETE, options);
 }
-
-
