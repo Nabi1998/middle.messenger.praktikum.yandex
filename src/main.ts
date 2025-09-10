@@ -6,9 +6,11 @@ import './styles/editProfilePage.pcss';
 import './styles/changeData.pcss';
 
 import './styles/errorPage.pcss';
-import App from './App.js';
+import App from './App';
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new App();
-  app.render();
+  (window as any).app = app;
 });
+
+

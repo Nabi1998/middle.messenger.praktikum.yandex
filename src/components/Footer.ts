@@ -1,3 +1,7 @@
-export default `<footer class="footer">
+const template: string = `<footer class="footer">
   {{> Link href="#" class="footer-link" data-page="registrationPage" text="Create Questionnaire"}}
-</footer>`
+</footer>`;
+
+export default template;
+
+
