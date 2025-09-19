@@ -1,5 +1,7 @@
 import Handlebars from 'handlebars';
 import './helpers/handlebarsHelpers';
+import Router from './utils/Router';
+import AuthService from './services/AuthService';
 
 import Button from './components/Button/Button';
 import Input from './components/Input/Input';
@@ -30,55 +32,58 @@ import { initChangeDataPage } from './pages/changeData/index';
 
 export default class App {
   private appElement: HTMLElement | null;
+  private router: Router;
 
   constructor() {
     this.appElement = document.getElementById('app');
-    this.setupRouting();
+    this.router = new Router();
+    this.setupRoutes();
+    this.setupGlobalNavigation();
+    this.initAuth();
   }
 
-  private setupRouting(): void {
-    window.addEventListener('hashchange', this.handleRouting.bind(this));
-    window.addEventListener('load', this.handleRouting.bind(this));
-  }
-
-  private handleRouting(): void {
-    const hash = location.hash.slice(1);
-    let page: string = 'loginPage';
-
-    switch (hash) {
-      case 'register':
-        page = 'registrationPage';
-        break;
-      case 'chat':
-        page = 'chatPage';
-        break;
-      case 'profile':
-        page = 'profilePage';
-        break;
-      case 'profile-edit':
-        page = 'editProfilePage';
-        break;
-      case 'login':
-        page = 'loginPage';
-        break;
-      case 'not-found':
-        page = 'errorPage';
-        break;
-      case 'not-supported':
-        page = 'errorPageTwo';
-        break;
-      case 'change-data':
-        page = 'changeData';
-        break;
-      default:
-        page = 'loginPage';
+  private async initAuth(): Promise<void> {
+    // Проверяем аутентификацию при запуске приложения
+    const isAuthenticated = await AuthService.checkAuth();
+    
+    // Если пользователь не аутентифицирован и находится на защищенной странице
+    const currentPath = window.location.pathname;
+    const protectedRoutes = ['/messenger', '/settings', '/settings/edit', '/settings/password'];
+    
+    if (!isAuthenticated && protectedRoutes.includes(currentPath)) {
+      this.router.go('/');
     }
+  }
 
-    this.renderPage(page);
+  private setupRoutes(): void {
+    this.router
+      .use('/', () => this.renderPage('loginPage'))
+      .use('/sign-up', () => this.renderPage('registrationPage'))
+      .use('/messenger', () => this.renderProtectedPage('chatPage'))
+      .use('/settings', () => this.renderProtectedPage('profilePage'))
+      .use('/settings/edit', () => this.renderProtectedPage('editProfilePage'))
+      .use('/settings/password', () => this.renderProtectedPage('changeData'))
+      .use('/404', () => this.renderPage('errorPage'))
+      .use('/500', () => this.renderPage('errorPageTwo'));
+    
+    // Start the router after routes are configured
+    this.router.start();
+  }
+
+  private renderProtectedPage(pageName: string): void {
+    // Проверяем аутентификацию для защищенных страниц
+    if (!AuthService.getIsAuthenticated()) {
+      this.router.go('/');
+      return;
+    }
+    this.renderPage(pageName);
   }
 
   private renderPage(pageName: string): void {
     if (!this.appElement) return;
+
+    // Очищаем DOM перед рендерингом новой страницы
+    this.appElement.innerHTML = '';
 
     let template: string;
     let data: any = {};
@@ -101,8 +106,9 @@ export default class App {
         break;
       case 'profilePage':
         template = profilePage;
+        const currentUser = AuthService.getCurrentUser();
         data = {
-          user: {
+          user: currentUser || {
             firstName: 'Иван',
             secondName: 'Иванов',
             displayName: 'ivan',
@@ -113,8 +119,9 @@ export default class App {
         break;
       case 'editProfilePage':
         template = editProfilePage;
+        const editUser = AuthService.getCurrentUser();
         data = {
-          user: {
+          user: editUser || {
             firstName: 'Иван',
             secondName: 'Иванов',
             displayName: 'ivan',
@@ -165,38 +172,63 @@ export default class App {
         initChangeDataPage();
         break;
     }
-
-    // Настраиваем навигацию для всех страниц
-    this.setupNavigation();
   }
 
-  private setupNavigation(): void {
+  private setupGlobalNavigation(): void {
     // Обработчики для навигации
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       
-      if (target.matches('[data-page]')) {
-        const page = target.getAttribute('data-page');
-        if (page) {
-          location.hash = page;
+      // Обработка ссылок с data-route атрибутом
+      if (target.matches('[data-route]')) {
+        e.preventDefault();
+        const route = target.getAttribute('data-route');
+        if (route) {
+          this.router.go(route);
         }
+        return; // Важно: выходим после обработки
       }
 
-      // Обработка кнопки "Назад"
-      if (target.matches('.back-button') || target.textContent?.includes('Назад')) {
-        history.back();
+      // Обработка кнопки "Назад" - только для кнопок и ссылок
+      if (target.matches('.back-button') || 
+          (target.matches('button, a') && target.textContent?.includes('Назад'))) {
+        e.preventDefault();
+        this.router.back();
+        return;
       }
 
-      // Обработка логаута
-      if (target.matches('.logout-button') || target.textContent?.includes('Выйти')) {
-        location.hash = 'login';
+      // Обработка логаута - только для кнопок и ссылок
+      if (target.matches('.logout-button') || 
+          (target.matches('button, a') && target.textContent?.includes('Выйти'))) {
+        e.preventDefault();
+        this.handleLogout();
+        return;
+      }
+
+      // Обработка кнопок с data-route в атрибутах
+      if (target.matches('button[data-route]')) {
+        e.preventDefault();
+        const route = target.getAttribute('data-route');
+        if (route) {
+          this.router.go(route);
+        }
+        return;
       }
     });
   }
+
+  private async handleLogout(): Promise<void> {
+    try {
+      await AuthService.logout();
+      this.router.go('/');
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+      // В случае ошибки все равно перенаправляем на главную
+      this.router.go('/');
+    }
+  }
+
+  public getRouter(): Router {
+    return this.router;
+  }
 }
-
-// Инициализируем приложение
-const app = new App();
-
-// Делаем доступным глобально для отладки
-(window as any).app = app;
