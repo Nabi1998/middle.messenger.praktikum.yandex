@@ -7,7 +7,7 @@ class ChatService extends EventBus {
   private chats: Chat[] = [];
   private currentChat: Chat | null = null;
   private messages: Message[] = [];
-  private isLoadingMessages = false;
+  private _isLoadingMessages = false;
 
   constructor() {
     super();
@@ -30,7 +30,7 @@ class ChatService extends EventBus {
 
     WebSocketService.on('oldMessages', (messages: Message[]) => {
       this.setMessages(messages);
-      this.isLoadingMessages = false;
+      this._isLoadingMessages = false;
       this.emit('messages:loaded', messages);
     });
 
@@ -99,7 +99,7 @@ class ChatService extends EventBus {
 
       this.currentChat = chat;
       this.messages = [];
-      this.isLoadingMessages = true;
+      this._isLoadingMessages = true;
 
       // Connect to WebSocket for this chat
       await WebSocketService.connect(chatId);
@@ -140,11 +140,11 @@ class ChatService extends EventBus {
   }
 
   loadMoreMessages(offset: number = 0): void {
-    if (this.isLoadingMessages || !WebSocketService.isConnected()) {
+    if (this._isLoadingMessages || !WebSocketService.isConnected()) {
       return;
     }
 
-    this.isLoadingMessages = true;
+    this._isLoadingMessages = true;
     WebSocketService.getOldMessages(offset);
   }
 
@@ -215,7 +215,7 @@ class ChatService extends EventBus {
   }
 
   getIsLoadingMessages(): boolean {
-    return this.isLoadingMessages;
+    return this._isLoadingMessages;
   }
 }
 
