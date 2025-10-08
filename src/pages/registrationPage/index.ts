@@ -54,7 +54,7 @@ export function initRegistrationPage(): void {
       const errorMessage = error instanceof Error ? error.message : 'Ошибка регистрации';
       
       // Показываем ошибку пользователю
-      let errorElement = form.querySelector('.error-message');
+      let errorElement = form.querySelector('.error-message') as HTMLElement | null;
       if (!errorElement) {
         errorElement = document.createElement('div');
         errorElement.className = 'error-message';

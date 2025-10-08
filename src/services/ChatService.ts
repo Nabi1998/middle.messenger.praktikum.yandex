@@ -214,7 +214,7 @@ class ChatService extends EventBus {
     return WebSocketService.isConnected();
   }
 
-  isLoadingMessages(): boolean {
+  getIsLoadingMessages(): boolean {
     return this.isLoadingMessages;
   }
 }
