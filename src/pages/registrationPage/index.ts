@@ -55,19 +55,23 @@ export function initRegistrationPage(): void {
       
       // Показываем ошибку пользователю
       let errorElement = form.querySelector<HTMLElement>('.error-message');
+      
       if (!errorElement) {
         errorElement = document.createElement('div');
         errorElement.className = 'error-message';
-        (errorElement as HTMLElement).style.color = 'red';
-        (errorElement as HTMLElement).style.marginBottom = '10px';
         form.insertBefore(errorElement, form.firstChild);
       }
       
-      // Если ошибка связана с существующим пользователем, показываем более понятное сообщение
+      // Приводим к HTMLElement и устанавливаем стили
+      const errorEl = errorElement as HTMLElement;
+      errorEl.style.color = 'red';
+      errorEl.style.marginBottom = '10px';
+      
+      // Устанавливаем текст ошибки
       if (errorMessage.includes('User already in system')) {
-        errorElement.textContent = 'Пользователь с таким email или логином уже существует. Попробуйте другие данные или войдите в систему.';
+        errorEl.textContent = 'Пользователь с таким email или логином уже существует. Попробуйте другие данные или войдите в систему.';
       } else {
-        errorElement.textContent = errorMessage;
+        errorEl.textContent = errorMessage;
       }
       
     } finally {
