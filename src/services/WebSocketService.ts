@@ -57,7 +57,6 @@ class WebSocketService extends EventBus {
       this.socket = new WebSocket(wsUrl);
 
       this.socket.onopen = () => {
-        console.log('WebSocket connected');
         this.isConnecting = false;
         this.reconnectAttempts = 0;
         this.emit('connected');
@@ -78,8 +77,7 @@ class WebSocketService extends EventBus {
             // New message
             this.emit('newMessage', data);
           } else if (data.type === 'pong') {
-            // Pong response - connection is alive
-            console.log('Received pong');
+            // Pong response - connection is alive (no logging needed)
           }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
@@ -87,7 +85,7 @@ class WebSocketService extends EventBus {
       };
 
       this.socket.onclose = (event) => {
-        console.log('WebSocket closed:', event.code, event.reason);
+        console.error('WebSocket closed:', event.code, event.reason);
         this.isConnecting = false;
         this.stopPing();
         this.emit('disconnected');
@@ -157,7 +155,7 @@ class WebSocketService extends EventBus {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
     
-    console.log(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
+    console.error(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
     
     setTimeout(() => {
       if (this.chatId) {

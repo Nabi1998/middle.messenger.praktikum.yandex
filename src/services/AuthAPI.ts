@@ -1,5 +1,5 @@
 import HTTPTransport from './HTTPTransport';
-import { SignUpData, SignInData, User, SignUpResponse, APIError } from '../types/api';
+import { SignUpData, SignInData, User, SignUpResponse } from '../types/api';
 
 class AuthAPI extends HTTPTransport {
   constructor() {

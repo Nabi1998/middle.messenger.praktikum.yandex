@@ -104,7 +104,7 @@ export default class App {
           ]
         };
         break;
-      case 'profilePage':
+      case 'profilePage': {
         template = profilePage;
         const currentUser = AuthService.getCurrentUser();
         data = {
@@ -117,7 +117,8 @@ export default class App {
           }
         };
         break;
-      case 'editProfilePage':
+      }
+      case 'editProfilePage': {
         template = editProfilePage;
         const editUser = AuthService.getCurrentUser();
         data = {
@@ -130,6 +131,7 @@ export default class App {
           }
         };
         break;
+      }
       case 'changeData':
         template = changeData;
         break;

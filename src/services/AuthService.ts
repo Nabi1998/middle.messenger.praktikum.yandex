@@ -10,7 +10,7 @@ class AuthService {
       this.currentUser = await AuthAPI.getUser();
       this.isAuthenticated = true;
       return true;
-    } catch (error) {
+    } catch {
       this.currentUser = null;
       this.isAuthenticated = false;
       return false;
@@ -18,33 +18,21 @@ class AuthService {
   }
 
   async signup(data: SignUpData): Promise<void> {
-    try {
-      await AuthAPI.signup(data);
-      // После регистрации автоматически входим
-      await this.signin({ login: data.login, password: data.password });
-    } catch (error) {
-      throw error;
-    }
+    await AuthAPI.signup(data);
+    // После регистрации автоматически входим
+    await this.signin({ login: data.login, password: data.password });
   }
 
   async signin(data: SignInData): Promise<void> {
-    try {
-      await AuthAPI.signin(data);
-      this.currentUser = await AuthAPI.getUser();
-      this.isAuthenticated = true;
-    } catch (error) {
-      throw error;
-    }
+    await AuthAPI.signin(data);
+    this.currentUser = await AuthAPI.getUser();
+    this.isAuthenticated = true;
   }
 
   async logout(): Promise<void> {
-    try {
-      await AuthAPI.logout();
-      this.currentUser = null;
-      this.isAuthenticated = false;
-    } catch (error) {
-      throw error;
-    }
+    await AuthAPI.logout();
+    this.currentUser = null;
+    this.isAuthenticated = false;
   }
 
   getCurrentUser(): User | null {
