@@ -1,52 +1,52 @@
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
   background-color: #f5f5f5;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
 }
 
 .profile-page {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  display: flex;
   height: 100vh;
+  justify-content: center;
 }
 
 .profile-card {
   background-color: white;
-  width: 500px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 5%);
   padding: 40px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
   text-align: center;
+  width: 500px;
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
   background-color: #ececec;
-  border-radius: 50%;
-  margin: 0 auto 15px auto;
   background-image: url('/avatar-placeholder.svg'); /* замените при необходимости */
-  background-repeat: no-repeat;
   background-position: center;
+  background-repeat: no-repeat;
   background-size: 50%;
+  border-radius: 50%;
+  height: 100px;
+  margin: 0 auto 15px;
+  width: 100px;
 }
 
 .profile-name {
-  font-weight: 600;
   font-size: 18px;
+  font-weight: 600;
   margin-bottom: 30px;
 }
 
 .profile-info {
-  text-align: left;
   margin-bottom: 30px;
+  text-align: left;
 }
 
 .info-row {
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   padding: 6px 0;
-  border-bottom: 1px solid #eee;
 }
 
 .label {
@@ -55,20 +55,20 @@ body {
 }
 
 .value {
-  font-size: 14px;
   color: #333;
+  font-size: 14px;
 }
 
 .profile-actions {
-  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  text-align: left;
 }
 
 .action-link {
-  font-size: 14px;
   color: var(--primary-color);
+  font-size: 14px;
   text-decoration: none;
 }
 
@@ -76,8 +76,8 @@ body {
   background: none;
   border: none;
   color: red;
+  cursor: pointer;
   font-size: 14px;
   padding: 0;
-  cursor: pointer;
   text-align: left;
 }
