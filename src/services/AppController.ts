@@ -1,11 +1,17 @@
 import EventBus from './EventBus';
 import UserService from './UserService';
 import View from './View';
+import { User } from '../types/api';
 
 export interface AppState {
   currentPage: string;
-  user: any | null;
+  user: User | null;
   isLoading: boolean;
+}
+
+interface ChangePasswordData {
+  oldPassword: string;
+  newPassword: string;
 }
 
 export default class AppController {
@@ -78,12 +84,12 @@ export default class AppController {
 
     this.currentView = view;
     this.setState({ currentPage: pageName });
-    
+
     view.show();
     this.eventBus.emit('page:rendered', pageName);
   }
 
-  private async handleLogin(data: any): Promise<void> {
+  private async handleLogin(data: Record<string, unknown>): Promise<void> {
     try {
       this.setState({ isLoading: true });
       const user = await this.userService.login(data);
@@ -96,7 +102,7 @@ export default class AppController {
     }
   }
 
-  private async handleRegister(data: any): Promise<void> {
+  private async handleRegister(data: Record<string, unknown>): Promise<void> {
     try {
       this.setState({ isLoading: true });
       const user = await this.userService.register(data);
@@ -108,7 +114,6 @@ export default class AppController {
       this.eventBus.emit('error:show', errorMessage);
     }
   }
-
   private async handleLogout(): Promise<void> {
     try {
       await this.userService.logout();
@@ -120,7 +125,7 @@ export default class AppController {
     }
   }
 
-  private async handleUpdateProfile(data: any): Promise<void> {
+  private async handleUpdateProfile(data: Partial<User>): Promise<void> {
     try {
       this.setState({ isLoading: true });
       const user = await this.userService.updateProfile(data);
@@ -133,7 +138,7 @@ export default class AppController {
     }
   }
 
-  private async handleChangePassword(data: any): Promise<void> {
+  private async handleChangePassword(data: ChangePasswordData): Promise<void> {
     try {
       this.setState({ isLoading: true });
       await this.userService.changePassword(data.oldPassword, data.newPassword);

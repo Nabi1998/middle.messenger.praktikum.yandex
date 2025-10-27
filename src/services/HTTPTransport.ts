@@ -7,10 +7,10 @@ enum METHODS {
 
 type Options = {
   method: METHODS;
-  data?: any;
+  data?: Record<string, unknown>;
   headers?: Record<string, string>;
   timeout?: number;
-};
+}
 
 type OptionsWithoutMethod = Omit<Options, 'method'>;
 
@@ -79,8 +79,8 @@ export default class HTTPTransport {
     });
   };
 
-  private queryStringify(data: Record<string, any>): string {
-    if (typeof data !== 'object') {
+  private queryStringify(data: Record<string, unknown>): string {
+    if (typeof data !== 'object' || data === null) {
       throw new Error('Data must be object');
     }
 

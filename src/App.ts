@@ -45,11 +45,11 @@ export default class App {
   private async initAuth(): Promise<void> {
     // Проверяем аутентификацию при запуске приложения
     const isAuthenticated = await AuthService.checkAuth();
-    
+
     // Если пользователь не аутентифицирован и находится на защищенной странице
     const currentPath = window.location.pathname;
     const protectedRoutes = ['/messenger', '/settings', '/settings/edit', '/settings/password'];
-    
+
     if (!isAuthenticated && protectedRoutes.includes(currentPath)) {
       this.router.go('/');
     }
@@ -65,7 +65,7 @@ export default class App {
       .use('/settings/password', () => this.renderProtectedPage('changeData'))
       .use('/404', () => this.renderPage('errorPage'))
       .use('/500', () => this.renderPage('errorPageTwo'));
-    
+
     // Start the router after routes are configured
     this.router.start();
   }
@@ -86,7 +86,7 @@ export default class App {
     this.appElement.innerHTML = '';
 
     let template: string;
-    let data: any = {};
+    let data: Record<string, unknown> = {};
 
     switch (pageName) {
       case 'loginPage':
@@ -180,7 +180,7 @@ export default class App {
     // Обработчики для навигации
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      
+
       // Обработка ссылок с data-route атрибутом
       if (target.matches('[data-route]')) {
         e.preventDefault();
@@ -192,7 +192,7 @@ export default class App {
       }
 
       // Обработка кнопки "Назад" - только для кнопок и ссылок
-      if (target.matches('.back-button') || 
+      if (target.matches('.back-button') ||
           (target.matches('button, a') && target.textContent?.includes('Назад'))) {
         e.preventDefault();
         this.router.back();
@@ -200,7 +200,7 @@ export default class App {
       }
 
       // Обработка логаута - только для кнопок и ссылок
-      if (target.matches('.logout-button') || 
+      if (target.matches('.logout-button') ||
           (target.matches('button, a') && target.textContent?.includes('Выйти'))) {
         e.preventDefault();
         this.handleLogout();

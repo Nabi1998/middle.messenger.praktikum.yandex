@@ -1,7 +1,7 @@
 import Block from './Block';
 
 export interface ViewProps {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export default abstract class View extends Block {

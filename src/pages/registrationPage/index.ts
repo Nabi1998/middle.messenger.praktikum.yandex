@@ -21,15 +21,15 @@ export function initRegistrationPage(): void {
     }
 
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries()) as any;
+    const data = Object.fromEntries(formData.entries()) as Record<string, FormDataEntryValue>;
 
     const signUpData: SignUpData = {
-      first_name: data.first_name,
-      second_name: data.second_name,
-      login: data.login,
-      email: data.email,
-      password: data.password,
-      phone: data.phone
+      first_name: String(data.first_name),
+      second_name: String(data.second_name),
+      login: String(data.login),
+      email: String(data.email),
+      password: String(data.password),
+      phone: String(data.phone),
     };
 
     try {
@@ -41,39 +41,39 @@ export function initRegistrationPage(): void {
       }
 
       await AuthService.signup(signUpData);
-      
+
       // Перенаправляем на страницу чата после успешной регистрации
-      const app = (window as any).app;
+      const app = (window as unknown).app;
       if (app && app.getRouter) {
         app.getRouter().go('/messenger');
       }
-      
+
     } catch (error) {
       console.error('❌ Ошибка регистрации:', error);
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Ошибка регистрации';
-      
+
       // Показываем ошибку пользователю
       let errorElement = form.querySelector<HTMLElement>('.error-message');
-      
+
       if (!errorElement) {
         errorElement = document.createElement('div');
         errorElement.className = 'error-message';
         form.insertBefore(errorElement, form.firstChild);
       }
-      
+
       // Приводим к HTMLElement и устанавливаем стили
       const errorEl = errorElement as HTMLElement;
       errorEl.style.color = 'red';
       errorEl.style.marginBottom = '10px';
-      
+
       // Устанавливаем текст ошибки
       if (errorMessage.includes('User already in system')) {
         errorEl.textContent = 'Пользователь с таким email или логином уже существует. Попробуйте другие данные или войдите в систему.';
       } else {
         errorEl.textContent = errorMessage;
       }
-      
+
     } finally {
       // Восстанавливаем кнопку
       const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');

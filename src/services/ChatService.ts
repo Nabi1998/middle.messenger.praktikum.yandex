@@ -34,7 +34,7 @@ class ChatService extends EventBus {
       this.emit('messages:loaded', messages);
     });
 
-    WebSocketService.on('error', (error: any) => {
+    WebSocketService.on('error', (error: unknown) => {
       this.emit('websocket:error', error);
     });
   }
@@ -69,12 +69,12 @@ class ChatService extends EventBus {
   async deleteChat(chatId: number): Promise<void> {
     try {
       await ChatsAPI.deleteChat(chatId);
-      
+
       // If we're deleting the current chat, disconnect WebSocket
       if (this.currentChat && this.currentChat.id === chatId) {
         this.leaveCurrentChat();
       }
-      
+
       // Remove from local chats array
       this.chats = this.chats.filter(chat => chat.id !== chatId);
       this.emit('chat:deleted', chatId);
@@ -92,7 +92,6 @@ class ChatService extends EventBus {
         throw new Error('Chat not found');
       }
 
-      // Leave current chat if any
       if (this.currentChat) {
         this.leaveCurrentChat();
       }
@@ -103,7 +102,7 @@ class ChatService extends EventBus {
 
       // Connect to WebSocket for this chat
       await WebSocketService.connect(chatId);
-      
+
       this.emit('chat:joined', chat);
     } catch (error) {
       this.emit('chat:error', error);

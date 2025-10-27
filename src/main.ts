@@ -7,7 +7,11 @@ import './styles/changeData.pcss';
 import './styles/errorPage.pcss';
 import App from './App';
 
+interface WindowWithApp extends Window {
+  app?: App;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const app = new App();
-  (window as any).app = app;
+  (window as WindowWithApp).app = app;
 });
