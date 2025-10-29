@@ -7,6 +7,7 @@ class AuthAPI extends HTTPTransport {
   }
 
   signup(data: SignUpData): Promise<SignUpResponse> {
+    console.log(data, 'fdsf');
     return this.post('/signup', { data }).then((response) => {
       if (response.status === 200) {
         return JSON.parse(response.response);
@@ -16,6 +17,7 @@ class AuthAPI extends HTTPTransport {
   }
 
   signin(data: SignInData): Promise<void> {
+    console.log('signin data', data);
     return this.post('/signin', { data }).then((response) => {
       if (response.status === 200) {
         return;

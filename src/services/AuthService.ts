@@ -20,10 +20,11 @@ class AuthService {
   async signup(data: SignUpData): Promise<void> {
     await AuthAPI.signup(data);
     // После регистрации автоматически входим
-    await this.signin({ login: data.login, password: data.password });
+    // await this.signin({ login: data.login, password: data.password });
   }
 
   async signin(data: SignInData): Promise<void> {
+    console.log(data, 'data')
     await AuthAPI.signin(data);
     this.currentUser = await AuthAPI.getUser();
     this.isAuthenticated = true;
