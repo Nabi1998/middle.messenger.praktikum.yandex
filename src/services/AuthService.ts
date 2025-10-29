@@ -37,6 +37,7 @@ class AuthService {
   }
 
   getCurrentUser(): User | null {
+    console.log(this.currentUser, 'getCurrentUser');
     return this.currentUser;
   }
 

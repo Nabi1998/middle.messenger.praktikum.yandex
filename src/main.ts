@@ -5,7 +5,8 @@ import './styles/profilePage.pcss';
 import './styles/editProfilePage.pcss';
 import './styles/changeData.pcss';
 import './styles/errorPage.pcss';
-import App from './App';
+// import App from './App';
+import App from './App2';
 
 interface WindowWithApp extends Window {
   app?: App;

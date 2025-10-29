@@ -28,6 +28,7 @@ class AuthAPI extends HTTPTransport {
 
   getUser(): Promise<User> {
     return this.get('/user').then((response) => {
+      console.log(JSON.parse(response.response), 'response');
       if (response.status === 200) {
         return JSON.parse(response.response);
       }
