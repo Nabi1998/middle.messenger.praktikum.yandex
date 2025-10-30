@@ -1,12 +1,16 @@
 <main>
   <div class="edit-profile-page">
     <div class="edit-profile-card">
-      <div class="edit-profile-avatar" id="open-avatar-modal">
-        🖼️
+<!--      <div class="edit-profile-avatar" id="open-avatar-modal">-->
+<!--        🖼️-->
+<!--      </div>-->
+      <div class="edit-profile-avatar" id="open-avatar-modal" style='background-image: url("{{avatar}}"); width: 100px; height: 100px; border-radius: 50%; background-size: cover; background-position: center;'>
+        {{#unless avatar}}🖼️{{/unless}}
       </div>
+
       <div class="edit-profile-name">{{first_name}}</div>
 
-      <form class="edit-profile-form" method="POST" action="/user/profile">
+      <form class="edit-profile-form">
         <div class="edit-profile-info">
           <div class="edit-profile-info-row">
             <label class="edit-profile-label" for="email">Почта</label>

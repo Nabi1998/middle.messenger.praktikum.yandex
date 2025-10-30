@@ -17,6 +17,7 @@ class UserAPI extends HTTPTransport {
 
   changeAvatar(data: FormData): Promise<User> {
     return this.put('/profile/avatar', { data }).then((response) => {
+      console.log(JSON.parse(response.response))
       if (response.status === 200) {
         return JSON.parse(response.response);
       }

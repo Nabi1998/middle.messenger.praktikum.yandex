@@ -1,7 +1,14 @@
 <main>
   <div class='profile-page'>
     <div class='profile-card'>
-      <div class='profile-avatar'></div>
+<!--      <div class='profile-avatar'>{{avatar}}</div>-->
+      <div class="profile-avatar">
+        {{#if avatar}}
+          <img src="{{avatar}}" alt="Avatar" class="avatar-img" />
+        {{else}}
+          🖼️
+        {{/if}}
+      </div>
       <div class='profile-name'>{{first_name}}</div>
 
       <div class='profile-info'>

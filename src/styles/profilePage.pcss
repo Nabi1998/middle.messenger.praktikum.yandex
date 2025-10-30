@@ -20,16 +20,24 @@ body {
 }
 
 .profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 15px;
   background-color: #ececec;
-  background-image: url('/avatar-placeholder.svg'); /* замените при необходимости */
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 50%;
-  border-radius: 50%;
-  height: 100px;
-  margin: 0 auto 15px;
-  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
 }
+.profile-avatar.empty::before {
+  content: "🖼️";
+  position: absolute;
+}
+
 
 .profile-name {
   font-size: 18px;

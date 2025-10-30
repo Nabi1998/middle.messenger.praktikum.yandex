@@ -29,17 +29,34 @@ export class profilePage extends Block<ProfileProps> {
       // Получаем данные пользователя с сервера
       const currentUser = await AuthService.getCurrentUser() || await AuthAPI.getUser();
 
-      if (currentUser) {
-        // Обновляем props один раз
-        this.setProps({
-          first_name: currentUser.first_name ?? '',
-          second_name: currentUser.second_name ?? '',
-          display_name: currentUser.display_name ?? '',
-          login: currentUser.login ?? '',
-          email: currentUser.email ?? '',
-          phone: currentUser.phone ?? '',
-          avatar: currentUser.avatar ?? null,
-        });
+      if (!currentUser) return;
+
+      // Путь к аватару (относительный путь, как возвращает сервер)
+      const avatarFullPath = currentUser.avatar ?? null;
+
+      // Обновляем props один раз
+      this.setProps({
+        first_name: currentUser.first_name ?? '',
+        second_name: currentUser.second_name ?? '',
+        display_name: currentUser.display_name ?? '',
+        login: currentUser.login ?? '',
+        email: currentUser.email ?? '',
+        phone: currentUser.phone ?? '',
+        avatar: avatarFullPath, // передаем путь с сервера
+      });
+
+      const avatarDiv = this._element?.querySelector<HTMLElement>('.profile-avatar');
+      if (avatarDiv) {
+        if (avatarFullPath) {
+          avatarDiv.style.backgroundImage = `url(${avatarFullPath})`;
+          avatarDiv.style.backgroundSize = 'cover';
+          avatarDiv.style.backgroundPosition = 'center';
+          avatarDiv.style.borderRadius = '50%';
+          avatarDiv.textContent = ''; // убираем плейсхолдер
+        } else {
+          avatarDiv.style.backgroundImage = '';
+          avatarDiv.textContent = '🖼️'; // показываем плейсхолдер
+        }
       }
 
       // Навешиваем обработчики кнопок
