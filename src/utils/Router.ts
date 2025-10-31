@@ -50,14 +50,14 @@ export default class Router {
 
   private async handleRoute(path: string): Promise<void> {
     this.currentPath = path;
-    
+
     // Check if route requires authentication
     const isPublicRoute = this.publicRoutes.includes(path);
-    
+
     if (!isPublicRoute) {
       // Check authentication for protected routes
       const isAuthenticated = await AuthService.checkAuth();
-      
+
       if (!isAuthenticated) {
         // Redirect to login page if not authenticated
         window.history.replaceState({}, '', '/');
@@ -69,10 +69,10 @@ export default class Router {
         return;
       }
     }
-    
+
     // Find matching route
     const route = this.routes.find(route => route.path === path);
-    
+
     if (route) {
       route.component();
     } else {
@@ -100,7 +100,7 @@ export default class Router {
 
   public async checkAuthAndRedirect(): Promise<void> {
     const isAuthenticated = await AuthService.checkAuth();
-    
+
     if (isAuthenticated && (this.currentPath === '/' || this.currentPath === '/sign-up')) {
       // If user is authenticated and on login/signup page, redirect to messenger
       this.go('/messenger');

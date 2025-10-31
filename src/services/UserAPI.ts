@@ -26,6 +26,7 @@ class UserAPI extends HTTPTransport {
   }
 
   changePassword(data: ChangePasswordData): Promise<void> {
+    console.log(data, 'data')
     return this.put('/password', { data }).then((response) => {
       if (response.status === 200) {
         return;

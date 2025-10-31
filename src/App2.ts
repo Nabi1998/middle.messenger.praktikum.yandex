@@ -41,7 +41,7 @@ export default class App {
     const isAuthenticated = await AuthService.checkAuth();
 
     const currentPath = window.location.pathname;
-    const protectedRoutes = ['/messenger', '/settings', '/settings/edit', '/settings/password'];
+    const protectedRoutes = ['/messenger', '/settings', '/edit-profile', '/change-password'];
 
     if (!isAuthenticated && protectedRoutes.includes(currentPath)) {
       this.router.go('/');
@@ -54,8 +54,8 @@ export default class App {
       .use('/sign-up', () => this.renderPage('registrationPage'))
       .use('/messenger', () => this.renderProtectedPage('chatPage'))
       .use('/settings', () => this.renderProtectedPage('profilePage'))
-      .use('/settings/edit', () => this.renderProtectedPage('editProfilePage'))
-      .use('/settings/password', () => this.renderProtectedPage('changeData'))
+      .use('/edit-profile', () => this.renderProtectedPage('editProfilePage'))
+      .use('/change-password', () => this.renderProtectedPage('changeData'))
       .use('/404', () => this.renderPage('errorPage'))
       .use('/500', () => this.renderPage('errorPageTwo'));
 

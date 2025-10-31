@@ -61,7 +61,7 @@ class WebSocketService extends EventBus {
         this.reconnectAttempts = 0;
         this.emit('connected');
         this.startPing();
-        
+
         // Request old messages
         this.getOldMessages();
       };
@@ -69,7 +69,7 @@ class WebSocketService extends EventBus {
       this.socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          
+
           if (Array.isArray(data)) {
             // Old messages
             this.emit('oldMessages', data.reverse());
@@ -89,7 +89,7 @@ class WebSocketService extends EventBus {
         this.isConnecting = false;
         this.stopPing();
         this.emit('disconnected');
-        
+
         // Attempt to reconnect if not closed intentionally
         if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
           this.scheduleReconnect();
@@ -112,12 +112,12 @@ class WebSocketService extends EventBus {
 
   disconnect(): void {
     this.stopPing();
-    
+
     if (this.socket) {
       this.socket.close(1000, 'User disconnected');
       this.socket = null;
     }
-    
+
     this.chatId = null;
     this.token = null;
     this.reconnectAttempts = 0;
@@ -154,9 +154,9 @@ class WebSocketService extends EventBus {
   private scheduleReconnect(): void {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
+
     console.error(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
-    
+
     setTimeout(() => {
       if (this.chatId) {
         this.connect(this.chatId);

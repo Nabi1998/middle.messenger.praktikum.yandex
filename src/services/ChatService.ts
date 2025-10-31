@@ -1,42 +1,35 @@
 import ChatsAPI from './ChatsAPI';
 import WebSocketService, { Message } from './WebSocketService';
 import EventBus from './EventBus';
-import { Chat, CreateChatData, ChatUser } from '../types/api';
+import AuthService from './AuthService';
+import { Chat, CreateChatData } from '../types/api';
 
 class ChatService extends EventBus {
   private chats: Chat[] = [];
   private currentChat: Chat | null = null;
   private messages: Message[] = [];
   private _isLoadingMessages = false;
+  private currentUserId: number;
 
   constructor() {
     super();
+    this.currentUserId = AuthService.getCurrentUser()?.id ?? 0;
     this.setupWebSocketListeners();
   }
 
   private setupWebSocketListeners(): void {
-    WebSocketService.on('connected', () => {
-      this.emit('websocket:connected');
-    });
-
-    WebSocketService.on('disconnected', () => {
-      this.emit('websocket:disconnected');
-    });
-
+    WebSocketService.on('connected', () => this.emit('websocket:connected'));
+    WebSocketService.on('disconnected', () => this.emit('websocket:disconnected'));
     WebSocketService.on('newMessage', (message: Message) => {
       this.addMessage(message);
-      this.emit('message:new', message);
+      this.emit('message:received', message);
     });
-
     WebSocketService.on('oldMessages', (messages: Message[]) => {
       this.setMessages(messages);
       this._isLoadingMessages = false;
       this.emit('messages:loaded', messages);
     });
-
-    WebSocketService.on('error', (error: unknown) => {
-      this.emit('websocket:error', error);
-    });
+    WebSocketService.on('error', (error: unknown) => this.emit('websocket:error', error));
   }
 
   async loadChats(): Promise<Chat[]> {
@@ -46,142 +39,97 @@ class ChatService extends EventBus {
       return this.chats;
     } catch (error) {
       this.emit('chats:error', error);
-      throw error;
+      return [];
     }
   }
 
-  async createChat(data: CreateChatData): Promise<Chat> {
+  async createChat(data: CreateChatData): Promise<Chat | null> {
     try {
       const result = await ChatsAPI.createChat(data);
-      await this.loadChats(); // Reload chats to get the new one
-      const newChat = this.chats.find(chat => chat.id === result.id);
-      if (newChat) {
-        this.emit('chat:created', newChat);
-        return newChat;
-      }
-      throw new Error('Failed to find created chat');
+      await this.loadChats();
+      const newChat = this.chats.find(chat => chat.id === result.id) ?? null;
+      if (newChat) this.emit('chat:created', newChat);
+      return newChat;
     } catch (error) {
       this.emit('chat:error', error);
-      throw error;
+      return null;
     }
   }
 
   async deleteChat(chatId: number): Promise<void> {
     try {
       await ChatsAPI.deleteChat(chatId);
-
-      // If we're deleting the current chat, disconnect WebSocket
-      if (this.currentChat && this.currentChat.id === chatId) {
-        this.leaveCurrentChat();
-      }
-
-      // Remove from local chats array
+      if (this.currentChat?.id === chatId) this.leaveCurrentChat();
       this.chats = this.chats.filter(chat => chat.id !== chatId);
       this.emit('chat:deleted', chatId);
       this.emit('chats:loaded', this.chats);
     } catch (error) {
       this.emit('chat:error', error);
-      throw error;
     }
   }
 
   async joinChat(chatId: number): Promise<void> {
-    try {
-      const chat = this.chats.find(c => c.id === chatId);
-      if (!chat) {
-        throw new Error('Chat not found');
-      }
+    if (!this.chats.length) await this.loadChats();
 
-      if (this.currentChat) {
-        this.leaveCurrentChat();
-      }
+    const chat = this.chats.find(c => c.id === chatId);
+    if (!chat) throw new Error('Чат не найден');
 
-      this.currentChat = chat;
-      this.messages = [];
-      this._isLoadingMessages = true;
+    if (this.currentChat) this.leaveCurrentChat();
 
-      // Connect to WebSocket for this chat
-      await WebSocketService.connect(chatId);
+    this.currentChat = chat;
+    this.messages = [];
+    this._isLoadingMessages = true;
 
-      this.emit('chat:joined', chat);
-    } catch (error) {
-      this.emit('chat:error', error);
-      throw error;
-    }
+    await WebSocketService.connect(chatId);
+    this.emit('chat:joined', chat);
   }
 
   leaveCurrentChat(): void {
-    if (this.currentChat) {
-      WebSocketService.disconnect();
-      const leftChat = this.currentChat;
-      this.currentChat = null;
-      this.messages = [];
-      this.emit('chat:left', leftChat);
-    }
+    if (!this.currentChat) return;
+    WebSocketService.disconnect();
+    const leftChat = this.currentChat;
+    this.currentChat = null;
+    this.messages = [];
+    this.emit('chat:left', leftChat);
   }
 
-  async sendMessage(content: string): Promise<void> {
-    if (!this.currentChat) {
-      throw new Error('No active chat');
-    }
-
-    if (!content.trim()) {
-      throw new Error('Message content cannot be empty');
-    }
+  async sendMessage(chatId: number, content: string): Promise<void> {
+    if (!content.trim()) throw new Error('Сообщение не может быть пустым');
 
     try {
+      if (this.currentChat?.id !== chatId || !this.isWebSocketConnected()) {
+        await this.joinChat(chatId);
+      }
+
       WebSocketService.sendMessage(content.trim());
-      this.emit('message:sent', content);
+
+      const msg: Message = {
+        id: Date.now(),
+        chatId,
+        userId: this.currentUserId,
+        content,
+        time: new Date().toISOString(),
+      };
+
+      this.addMessage(msg);
+      this.emit('message:sent', msg);
     } catch (error) {
       this.emit('message:error', error);
-      throw error;
     }
   }
 
   loadMoreMessages(offset: number = 0): void {
-    if (this._isLoadingMessages || !WebSocketService.isConnected()) {
-      return;
-    }
-
+    if (this._isLoadingMessages || !WebSocketService.isConnected()) return;
     this._isLoadingMessages = true;
     WebSocketService.getOldMessages(offset);
   }
 
-  async getChatUsers(chatId: number): Promise<ChatUser[]> {
-    try {
-      const users = await ChatsAPI.getChatUsers(chatId);
-      this.emit('chat:users:loaded', { chatId, users });
-      return users;
-    } catch (error) {
-      this.emit('chat:users:error', error);
-      throw error;
-    }
-  }
-
-  async addUsersToChat(chatId: number, userIds: number[]): Promise<void> {
-    try {
-      await ChatsAPI.addUsersToChat(chatId, userIds);
-      this.emit('chat:users:added', { chatId, userIds });
-    } catch (error) {
-      this.emit('chat:users:error', error);
-      throw error;
-    }
-  }
-
-  async removeUsersFromChat(chatId: number, userIds: number[]): Promise<void> {
-    try {
-      await ChatsAPI.removeUsersFromChat(chatId, userIds);
-      this.emit('chat:users:removed', { chatId, userIds });
-    } catch (error) {
-      this.emit('chat:users:error', error);
-      throw error;
-    }
+  getMessages(): Message[] {
+    return [...this.messages];
   }
 
   private addMessage(message: Message): void {
-    // Avoid duplicates
-    const exists = this.messages.some(m => m.id === message.id);
-    if (!exists) {
+    if (!this.messages.some(m => m.id === message.id)) {
       this.messages.push(message);
       this.sortMessages();
     }
@@ -196,26 +144,18 @@ class ChatService extends EventBus {
     this.messages.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
   }
 
-  // Getters
-  getChats(): Chat[] {
-    return [...this.chats];
+  isWebSocketConnected(): boolean {
+    return WebSocketService.isConnected();
   }
 
   getCurrentChat(): Chat | null {
     return this.currentChat;
   }
 
-  getMessages(): Message[] {
-    return [...this.messages];
-  }
-
-  isWebSocketConnected(): boolean {
-    return WebSocketService.isConnected();
-  }
-
-  getIsLoadingMessages(): boolean {
-    return this._isLoadingMessages;
+  getChats(): Chat[] {
+    return [...this.chats];
   }
 }
 
 export default new ChatService();
+

@@ -1,6 +1,7 @@
 import Block from '../../services/Block';
 import changeDataTemplateRaw from './changeData.hbs?raw';
-import AuthService from '../../services/AuthService';
+import UserAPI from '../../services/UserAPI';
+import { setupFormValidation } from '../../utils/validation'; // ✅ добавлен правильный импорт
 
 const changeDataTemplate = changeDataTemplateRaw as unknown as string;
 
@@ -21,8 +22,8 @@ export class changeDataPage extends Block<ChangeDataProps> {
     const form = this._element?.querySelector<HTMLFormElement>('.change-password-form');
     if (!form) return;
 
-    // Настраиваем валидацию
-    const validateAll = (window as any).setupFormValidation(form);
+    // ✅ Используем импорт напрямую, а не window
+    const validateAll = setupFormValidation(form);
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -36,19 +37,25 @@ export class changeDataPage extends Block<ChangeDataProps> {
       const data = Object.fromEntries(formData.entries());
 
       try {
-        // Здесь можно вызвать метод сервиса для смены пароля
-        await AuthService.changePassword({
+        // ✅ Запрос на смену пароля
+        await UserAPI.changePassword({
           oldPassword: String(data.oldPassword),
           newPassword: String(data.newPassword),
         });
 
         console.log('✅ Пароль успешно изменен');
-        // После успешной смены редиректим на профиль
+        // ✅ После успешной смены пароля — редирект на профиль
         const app = (window as any).app;
-        app?.getRouter().go('/settings/profile');
+        if (app?.getRouter) {
+          app.getRouter().go('/settings');
+        } else {
+          location.hash = 'settings';
+        }
       } catch (error) {
         console.error('Ошибка смены пароля:', error);
-        this.setProps({ errorMessage: (error as Error).message || 'Ошибка смены пароля' });
+        this.setProps({
+          errorMessage: (error as Error).message || 'Ошибка смены пароля',
+        });
       }
     });
 
@@ -62,9 +69,13 @@ export class changeDataPage extends Block<ChangeDataProps> {
   }
 
   private passwordsMatch(form: HTMLFormElement): boolean {
-    const newPassword = form.querySelector<HTMLInputElement>('input[name="newPassword"]')?.value ?? '';
-    const repeatPassword = form.querySelector<HTMLInputElement>('input[name="repeatPassword"]')?.value ?? '';
-    const errorEl = form.querySelector<HTMLInputElement>('input[name="repeatPassword"]')?.parentElement?.querySelector<HTMLElement>('.error-message');
+    const newPassword =
+      form.querySelector<HTMLInputElement>('input[name="newPassword"]')?.value ?? '';
+    const repeatPassword =
+      form.querySelector<HTMLInputElement>('input[name="repeatPassword"]')?.value ?? '';
+    const errorEl = form
+      .querySelector<HTMLInputElement>('input[name="repeatPassword"]')
+      ?.parentElement?.querySelector<HTMLElement>('.error-message');
 
     if (newPassword && repeatPassword && newPassword !== repeatPassword) {
       if (errorEl) errorEl.textContent = 'Пароли не совпадают';
