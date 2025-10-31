@@ -281,7 +281,7 @@ import { User } from '../../types/api';
 const editProfileTemplate = editProfileTemplateRaw as unknown as string;
 
 // Базовый URL сервера
-const BASE_URL = 'https://example.com';
+const BASE_URL = 'https://ya-praktikum.tech/api/v2/resources/';
 
 interface EditProfileProps {
   first_name?: string;

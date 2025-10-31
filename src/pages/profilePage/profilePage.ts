@@ -5,6 +5,10 @@ import AuthAPI from '../../services/AuthAPI';
 
 const profileTemplate = profileTemplateRaw as unknown as string;
 
+
+const BASE_URL = 'https://ya-praktikum.tech/api/v2/resources/';
+
+
 interface ProfileProps {
   first_name?: string;
   second_name?: string;
@@ -32,7 +36,7 @@ export class profilePage extends Block<ProfileProps> {
       if (!currentUser) return;
 
       // Путь к аватару (относительный путь, как возвращает сервер)
-      const avatarFullPath = currentUser.avatar ?? null;
+      const avatarFullPath = currentUser.avatar ? BASE_URL + currentUser.avatar : null;
 
       // Обновляем props один раз
       this.setProps({
