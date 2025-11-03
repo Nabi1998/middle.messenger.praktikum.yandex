@@ -9,6 +9,7 @@ const errorPageTwoTemplate = errorPageTwoRaw as unknown as string;
 interface ErrorProps {
   errorCode: string;
   errorText: string;
+  [key: string]: unknown;
 }
 
 export class errorPage extends Block<ErrorProps> {

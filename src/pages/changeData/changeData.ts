@@ -7,6 +7,7 @@ const changeDataTemplate = changeDataTemplateRaw as unknown as string;
 
 interface ChangeDataProps {
   errorMessage?: string;
+  [key: string]: unknown;
 }
 
 export class changeDataPage extends Block<ChangeDataProps> {
