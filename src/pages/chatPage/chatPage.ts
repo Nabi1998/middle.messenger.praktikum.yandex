@@ -178,6 +178,45 @@ export class chatPage extends Block {
 
   /** Форма отправки сообщений */
 
+  // private initMessageForm() {
+  //   const messageForm = this._element?.querySelector<HTMLFormElement>('.message-form');
+  //   if (!messageForm) return;
+  //
+  //   const validateAll = setupFormValidation(messageForm);
+  //
+  //   messageForm.addEventListener('submit', async (e) => {
+  //     e.preventDefault();
+  //
+  //     const messageInput = messageForm.querySelector<HTMLInputElement>('input[name="message"]');
+  //     if (!messageInput || !validateAll() || !messageInput.value.trim()) return;
+  //     if (!this.activeChatId) return alert('Выберите чат');
+  //
+  //     const content = messageInput.value.trim();
+  //
+  //     try {
+  //       const ChatService = (await import('../../services/ChatService')).default;
+  //
+  //       // Отправляем сообщение
+  //       await ChatService.sendMessage(this.activeChatId, content);
+  //
+  //       // Добавляем сообщение сразу в UI
+  //       const msg: Message = {
+  //         id: Date.now(),
+  //         chatId: this.activeChatId,
+  //         userId: this.currentUserId,
+  //         content,
+  //         time: new Date().toISOString(),
+  //       };
+  //       this.addMessageToDOM(msg);
+  //       this.currentMessages.push(msg);
+  //
+  //       messageInput.value = '';
+  //     } catch (err) {
+  //       console.error('Ошибка отправки сообщения:', err);
+  //       alert('Не удалось отправить сообщение');
+  //     }
+  //   });
+  // }
   private initMessageForm() {
     const messageForm = this._element?.querySelector<HTMLFormElement>('.message-form');
     if (!messageForm) return;
@@ -195,6 +234,12 @@ export class chatPage extends Block {
 
       try {
         const ChatService = (await import('../../services/ChatService')).default;
+
+        // ⚡ Убедимся, что sendMessage принимает два параметра
+        if (typeof ChatService.sendMessage !== 'function') {
+          console.error('sendMessage метод отсутствует в ChatService');
+          return;
+        }
 
         // Отправляем сообщение
         await ChatService.sendMessage(this.activeChatId, content);
