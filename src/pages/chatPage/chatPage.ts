@@ -2,6 +2,8 @@ import Block from '../../services/Block';
 import chatTemplateRaw from './chatPage.hbs?raw';
 import ChatAPI from '../../services/ChatsAPI';
 import { setupFormValidation } from '../../utils/validation';
+import type { Message as WSMessage } from '../../services/WebSocketService';
+
 
 const chatTemplate = chatTemplateRaw as unknown as string;
 
@@ -12,6 +14,11 @@ interface Chat {
     content: string;
     time: string;
   };
+}
+
+interface ChatMessage extends WSMessage {
+  chatId: number;
+  userId: number;
 }
 
 interface Message {
@@ -55,8 +62,13 @@ export class chatPage extends Block {
     // Подписка на сообщения через ChatService
     const ChatService = (await import('../../services/ChatService')).default;
 
-    ChatService.on('message:sent', (msg: Message) => this.onMessageReceived(msg));
-    ChatService.on('message:received', (msg: Message) => this.onMessageReceived(msg));
+    ChatService.on('message:sent', (msg: unknown) => {
+      this.onMessageReceived(msg as ChatMessage);
+    });
+
+    ChatService.on('message:received', (msg: unknown) => {
+      this.onMessageReceived(msg as ChatMessage);
+    });
   }
 
   /** Загрузка чатов */
