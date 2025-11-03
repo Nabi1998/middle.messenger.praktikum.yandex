@@ -24,8 +24,6 @@ import errorPage from './pages/errorPage/errorPage.hbs?raw';
 import errorPageTwo from './pages/errorPage/errorPageTwo.hbs?raw';
 
 // Импортируем функции инициализации
-import { initLoginPage } from './pages/loginPage/initLoginPage';
-import { initRegistrationPage } from './pages/registrationPage/index';
 import { initChatPage } from './pages/chatPage/index';
 import { initEditProfilePage } from './pages/editProfilePage/index';
 import { initChangeDataPage } from './pages/changeData/index';
@@ -159,10 +157,8 @@ export default class App {
   private initPage(pageName: string): void {
     switch (pageName) {
       case 'loginPage':
-        initLoginPage();
         break;
       case 'registrationPage':
-        initRegistrationPage();
         break;
       case 'chatPage':
         initChatPage();
