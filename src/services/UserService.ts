@@ -12,11 +12,13 @@ export interface User {
 }
 
 export interface LoginData {
+  [key: string]: unknown;
   login: string;
   password: string;
 }
 
 export interface RegistrationData {
+  [key: string]: unknown;
   first_name: string;
   second_name: string;
   login: string;
