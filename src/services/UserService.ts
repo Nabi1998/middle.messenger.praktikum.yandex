@@ -7,7 +7,7 @@ export interface User {
   login: string;
   email: string;
   phone: string;
-  avatar?: string;
+  avatar: string;
   display_name?: string;
 }
 
