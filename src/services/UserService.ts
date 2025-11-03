@@ -1,7 +1,7 @@
 import { HttpClient } from '../utils/httpClient';
 
 export interface User {
-  id: string;
+  id: number;
   first_name: string;
   second_name: string;
   login: string;
