@@ -17,6 +17,7 @@ interface ProfileProps {
   email?: string;
   phone?: string;
   avatar?: string | null;
+  [key: string]: unknown;
 }
 
 export class profilePage extends Block<ProfileProps> {
