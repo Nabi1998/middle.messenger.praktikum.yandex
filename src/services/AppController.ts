@@ -1,7 +1,7 @@
 import EventBus from './EventBus';
 import UserService from './UserService';
 import View from './View';
-import { User, ChangePasswordData } from '../types/api';
+import { User } from '../types/api';
 import { RegistrationData, LoginData } from './UserService';
 
 export interface AppState {
@@ -9,11 +9,11 @@ export interface AppState {
   user: User | null;
   isLoading: boolean;
 }
-//
-// interface ChangePasswordData {
-//   oldPassword: string;
-//   newPassword: string;
-// }
+
+interface ChangePasswordData {
+  oldPassword: string;
+  newPassword: string;
+}
 
 export default class AppController {
   private eventBus: EventBus;
@@ -34,13 +34,51 @@ export default class AppController {
     this.setupEventListeners();
   }
 
+  // private setupEventListeners(): void {
+  //   this.eventBus.on('page:change', this.changePage.bind(this));
+  //   this.eventBus.on('user:login', this.handleLogin.bind(this));
+  //   this.eventBus.on('user:register', this.handleRegister.bind(this));
+  //   this.eventBus.on('user:logout', this.handleLogout.bind(this));
+  //   this.eventBus.on('user:updateProfile', this.handleUpdateProfile.bind(this));
+  //   this.eventBus.on('user:changePassword', this.handleChangePassword.bind(this));
+  // }
+
+
   private setupEventListeners(): void {
-    this.eventBus.on('page:change', this.changePage.bind(this));
-    this.eventBus.on('user:login', this.handleLogin.bind(this));
-    this.eventBus.on('user:register', this.handleRegister.bind(this));
-    this.eventBus.on('user:logout', this.handleLogout.bind(this));
-    this.eventBus.on('user:updateProfile', this.handleUpdateProfile.bind(this));
-    this.eventBus.on('user:changePassword', this.handleChangePassword.bind(this));
+    // Для смены страницы
+    this.eventBus.on('page:change', async (args: unknown) => {
+      const pageName = args as string;
+      await this.changePage(pageName);
+    });
+
+    // Для логина
+    this.eventBus.on('user:login', async (args: unknown) => {
+      const data = args as LoginData;
+      await this.handleLogin(data);
+    });
+
+    // Для регистрации
+    this.eventBus.on('user:register', async (args: unknown) => {
+      const data = args as RegistrationData;
+      await this.handleRegister(data);
+    });
+
+    // Для выхода
+    this.eventBus.on('user:logout', async () => {
+      await this.handleLogout();
+    });
+
+    // Для обновления профиля
+    this.eventBus.on('user:updateProfile', async (args: unknown) => {
+      const data = args as Partial<User>;
+      await this.handleUpdateProfile(data);
+    });
+
+    // Для смены пароля
+    this.eventBus.on('user:changePassword', async (args: unknown) => {
+      const data = args as ChangePasswordData;
+      await this.handleChangePassword(data);
+    });
   }
 
   public registerView(name: string, view: View): void {
