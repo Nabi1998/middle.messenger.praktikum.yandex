@@ -1,7 +1,7 @@
 import EventBus from './EventBus';
 import UserService from './UserService';
 import View from './View';
-import { User } from '../types/api';
+import { User, ChangePasswordData } from '../types/api';
 import { RegistrationData, LoginData } from './UserService';
 
 export interface AppState {
@@ -9,11 +9,11 @@ export interface AppState {
   user: User | null;
   isLoading: boolean;
 }
-
-interface ChangePasswordData {
-  oldPassword: string;
-  newPassword: string;
-}
+//
+// interface ChangePasswordData {
+//   oldPassword: string;
+//   newPassword: string;
+// }
 
 export default class AppController {
   private eventBus: EventBus;
