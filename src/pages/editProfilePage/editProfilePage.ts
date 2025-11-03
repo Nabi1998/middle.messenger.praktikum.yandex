@@ -81,8 +81,38 @@ export class editProfilePage extends Block<EditProfileProps> {
       const validateAll = setupFormValidation(form);
 
       // Сабмит формы через JS
+      // form.addEventListener('submit', async (e) => {
+      //   e.preventDefault(); // ⚠️ ключевой момент — форма не должна сабмититься нативно
+      //
+      //   const formData = new FormData(form);
+      //   const data = Object.fromEntries(formData.entries()) as Partial<User>;
+      //
+      //   if (!validateAll()) {
+      //     console.error('❌ Ошибка валидации профиля');
+      //     return;
+      //   }
+      //
+      //   try {
+      //     const updatedUser = await UserAPI.changeProfile(data);
+      //     const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
+      //
+      //     this.setProps({ ...this.props, ...updatedUser, avatar: avatarPath });
+      //     this.setAvatar(avatarPreview!, avatarPath);
+      //
+      //     // Перенаправление через роутер
+      //     const app = (window as any).app;
+      //     if (app?.getRouter) {
+      //       app.getRouter().go('/settings');
+      //     } else {
+      //       location.hash = 'settings';
+      //     }
+      //   } catch (err) {
+      //     console.error('❌ Ошибка при сохранении профиля:', err);
+      //   }
+      // });
+
       form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // ⚠️ ключевой момент — форма не должна сабмититься нативно
+        e.preventDefault(); // ⚠️ форма не должна сабмититься нативно
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries()) as Partial<User>;
@@ -93,10 +123,30 @@ export class editProfilePage extends Block<EditProfileProps> {
         }
 
         try {
-          const updatedUser = await UserAPI.changeProfile(data);
+          // Отправляем только необходимые поля
+          const updatedUser = await UserAPI.changeProfile({
+            first_name: data.first_name as string,
+            second_name: data.second_name as string,
+            display_name: data.display_name as string,
+            login: data.login as string,
+            email: data.email as string,
+            phone: data.phone as string
+          });
+
           const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
 
-          this.setProps({ ...this.props, ...updatedUser, avatar: avatarPath });
+          // Передаём только поля, которые есть в EditProfileProps
+          this.setProps({
+            ...this.props,
+            first_name: updatedUser.first_name,
+            second_name: updatedUser.second_name,
+            display_name: updatedUser.display_name,
+            login: updatedUser.login,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            avatar: avatarPath
+          });
+
           this.setAvatar(avatarPreview!, avatarPath);
 
           // Перенаправление через роутер
