@@ -83,42 +83,15 @@ export class chatPage extends Block {
     }
   }
 
-  private initChatClickHandler() {
-    const chatList = this._element?.querySelector('.chat-list');
-    if (!chatList) return;
-
-    chatList.addEventListener('click', async (event) => {
-      const target = (event.target as HTMLElement).closest('.chat-item');
-      if (!target) return;
-
-      const chatId = Number(target.getAttribute('data-chat-id'));
-      this.activeChatId = chatId;
-
-      chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-      target.classList.add('active');
-
-      await this.loadMessages(chatId);
-
-      const tokenData = await ChatAPI.getChatToken(chatId);
-      console.log('🪙 Токен для чата:', tokenData.token);
-    });
-  }
-
   // private initChatClickHandler() {
   //   const chatList = this._element?.querySelector('.chat-list');
   //   if (!chatList) return;
   //
   //   chatList.addEventListener('click', async (event) => {
-  //     const target = (event.target as HTMLElement)?.closest('.chat-item');
+  //     const target = (event.target as HTMLElement).closest('.chat-item');
+  //     if (!target) return;
   //
-  //     if (!(target instanceof HTMLElement)) return; // безопасная проверка
-  //
-  //     const chatIdAttr = target.getAttribute('data-chat-id');
-  //     if (!chatIdAttr) return;
-  //
-  //     const chatId = Number(chatIdAttr);
-  //     if (isNaN(chatId)) return; // проверка на корректное число
-  //
+  //     const chatId = Number(target.getAttribute('data-chat-id'));
   //     this.activeChatId = chatId;
   //
   //     chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
@@ -130,6 +103,33 @@ export class chatPage extends Block {
   //     console.log('🪙 Токен для чата:', tokenData.token);
   //   });
   // }
+
+  private initChatClickHandler() {
+    const chatList = this._element?.querySelector('.chat-list');
+    if (!chatList) return;
+
+    chatList.addEventListener('click', async (event) => {
+      const target = (event.target as HTMLElement)?.closest('.chat-item');
+
+      if (!(target instanceof HTMLElement)) return; // безопасная проверка
+
+      const chatIdAttr = target.getAttribute('data-chat-id');
+      if (!chatIdAttr) return;
+
+      const chatId = Number(chatIdAttr);
+      if (isNaN(chatId)) return; // проверка на корректное число
+
+      this.activeChatId = chatId;
+
+      chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+      target.classList.add('active');
+
+      await this.loadMessages(chatId);
+
+      const tokenData = await ChatAPI.getChatToken(chatId);
+      console.log('🪙 Токен для чата:', tokenData.token);
+    });
+  }
 
   private async loadMessages(chatId: number) {
     const messagesContainer = this._element?.querySelector('.chat-messages');
