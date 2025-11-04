@@ -3,7 +3,7 @@ import chatTemplateRaw from './chatPage.hbs?raw';
 import ChatAPI from '../../services/ChatsAPI';
 import { setupFormValidation } from '../../utils/validation';
 import type { Message as WSMessage } from '../../services/WebSocketService';
-
+import LogoutService from '../../services/LogoutService';
 
 const chatTemplate = chatTemplateRaw as unknown as string;
 
@@ -44,14 +44,11 @@ export class chatPage extends Block {
   }
 
   async componentDidMount(): Promise<void> {
-    // Получаем текущего пользователя
     const AuthService = (await import('../../services/AuthService')).default;
     this.currentUserId = AuthService.getCurrentUser()?.id ?? 0;
 
-    // Загружаем чаты
     await this.loadChats();
 
-    // Инициализация кнопок и формы
     this.initChatClickHandler();
     this.initProfileButton();
     this.initCreateChatButton();
@@ -59,19 +56,11 @@ export class chatPage extends Block {
     this.initLogoutButton();
     this.initDeleteChatButton();
 
-    // Подписка на сообщения через ChatService
     const ChatService = (await import('../../services/ChatService')).default;
-
-    ChatService.on('message:sent', (msg: unknown) => {
-      this.onMessageReceived(msg as ChatMessage);
-    });
-
-    ChatService.on('message:received', (msg: unknown) => {
-      this.onMessageReceived(msg as ChatMessage);
-    });
+    ChatService.on('message:sent', (msg: unknown) => this.onMessageReceived(msg as ChatMessage));
+    ChatService.on('message:received', (msg: unknown) => this.onMessageReceived(msg as ChatMessage));
   }
 
-  /** Загрузка чатов */
   private async loadChats() {
     try {
       this.chats = await ChatAPI.getChats();
@@ -79,8 +68,7 @@ export class chatPage extends Block {
       if (!chatList) return;
 
       chatList.innerHTML = this.chats
-        .map(
-          (chat) => `
+        .map(chat => `
           <div class="chat-item" data-chat-id="${chat.id}">
             <div class="chat-avatar">👤</div>
             <div class="chat-info">
@@ -88,15 +76,13 @@ export class chatPage extends Block {
               <div class="chat-last-message">${chat.last_message?.content || ''}</div>
               <div class="chat-time">${chat.last_message?.time || ''}</div>
             </div>
-          </div>`
-        )
-        .join('');
+          </div>
+        `).join('');
     } catch (err) {
       console.error('Ошибка загрузки чатов:', err);
     }
   }
 
-  /** Выбор чата */
   private initChatClickHandler() {
     const chatList = this._element?.querySelector('.chat-list');
     if (!chatList) return;
@@ -108,7 +94,7 @@ export class chatPage extends Block {
       const chatId = Number(target.getAttribute('data-chat-id'));
       this.activeChatId = chatId;
 
-      chatList.querySelectorAll('.chat-item').forEach((item) => item.classList.remove('active'));
+      chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
       target.classList.add('active');
 
       await this.loadMessages(chatId);
@@ -118,7 +104,33 @@ export class chatPage extends Block {
     });
   }
 
-  /** Загрузка сообщений чата */
+  // private initChatClickHandler() {
+  //   const chatList = this._element?.querySelector('.chat-list');
+  //   if (!chatList) return;
+  //
+  //   chatList.addEventListener('click', async (event) => {
+  //     const target = (event.target as HTMLElement)?.closest('.chat-item');
+  //
+  //     if (!(target instanceof HTMLElement)) return; // безопасная проверка
+  //
+  //     const chatIdAttr = target.getAttribute('data-chat-id');
+  //     if (!chatIdAttr) return;
+  //
+  //     const chatId = Number(chatIdAttr);
+  //     if (isNaN(chatId)) return; // проверка на корректное число
+  //
+  //     this.activeChatId = chatId;
+  //
+  //     chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+  //     target.classList.add('active');
+  //
+  //     await this.loadMessages(chatId);
+  //
+  //     const tokenData = await ChatAPI.getChatToken(chatId);
+  //     console.log('🪙 Токен для чата:', tokenData.token);
+  //   });
+  // }
+
   private async loadMessages(chatId: number) {
     const messagesContainer = this._element?.querySelector('.chat-messages');
     if (!messagesContainer) return;
@@ -134,18 +146,14 @@ export class chatPage extends Block {
         </div>
         <div class="messages">
           ${this.currentMessages
-        .map(
-          (msg) =>
-            `<div class="message ${msg.userId === this.currentUserId ? 'own' : ''}">
-              <span class="msg-content">${msg.content}</span>
-              <span class="msg-time">${new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>`
-        )
-        .join('')}
+        .map(msg => `
+          <div class="message ${msg.userId === this.currentUserId ? 'own' : ''}">
+            <span class="msg-content">${msg.content}</span>
+            <span class="msg-time">${new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>`).join('')}
         </div>
       `;
 
-      // Автоскролл
       const messagesDiv = messagesContainer.querySelector('.messages');
       if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
     } catch (err) {
@@ -153,14 +161,12 @@ export class chatPage extends Block {
     }
   }
 
-  /** Обработка приходящих сообщений */
   private onMessageReceived(msg: Message) {
     if (msg.chatId !== this.activeChatId) return;
     this.addMessageToDOM(msg);
     this.currentMessages.push(msg);
   }
 
-  /** Добавление сообщения в DOM */
   private addMessageToDOM(msg: Message) {
     const messagesDiv = this._element?.querySelector('.messages');
     if (!messagesDiv) return;
@@ -175,8 +181,6 @@ export class chatPage extends Block {
 
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
-
-  /** Форма отправки сообщений */
 
   private initMessageForm() {
     const messageForm = this._element?.querySelector<HTMLFormElement>('.message-form');
@@ -195,11 +199,8 @@ export class chatPage extends Block {
 
       try {
         const ChatService = (await import('../../services/ChatService')).default;
-
-        // Отправляем сообщение
         await ChatService.sendMessage(this.activeChatId, content);
 
-        // Добавляем сообщение сразу в UI
         const msg: Message = {
           id: Date.now(),
           chatId: this.activeChatId,
@@ -207,9 +208,9 @@ export class chatPage extends Block {
           content,
           time: new Date().toISOString(),
         };
+
         this.addMessageToDOM(msg);
         this.currentMessages.push(msg);
-
         messageInput.value = '';
       } catch (err) {
         console.error('Ошибка отправки сообщения:', err);
@@ -218,9 +219,6 @@ export class chatPage extends Block {
     });
   }
 
-
-
-  /** Удаление чата */
   private initDeleteChatButton() {
     const messagesContainer = this._element?.querySelector('.chat-messages');
     if (!messagesContainer) return;
@@ -235,11 +233,9 @@ export class chatPage extends Block {
       try {
         await ChatAPI.deleteChat(this.activeChatId);
 
-        // Сброс текущего чата
         this.activeChatId = null;
         this.currentMessages = [];
 
-        // Очистка сообщений
         messagesContainer.innerHTML = `
           <div class="chat-placeholder">
             <h3>Выберите чат для начала общения</h3>
@@ -247,7 +243,6 @@ export class chatPage extends Block {
           </div>
         `;
 
-        // Обновляем список чатов
         await this.loadChats();
       } catch (err) {
         console.error('Ошибка удаления чата:', err);
@@ -256,7 +251,6 @@ export class chatPage extends Block {
     });
   }
 
-  /** Кнопка профиля */
   private initProfileButton() {
     const profileBtn = this._element?.querySelector('.profile-btn');
     if (!profileBtn) return;
@@ -266,7 +260,6 @@ export class chatPage extends Block {
     });
   }
 
-  /** Создание нового чата */
   private initCreateChatButton() {
     const newChatBtn = this._element?.querySelector('.new-chat-btn');
     if (!newChatBtn) return;
@@ -284,16 +277,14 @@ export class chatPage extends Block {
     });
   }
 
-  /** Кнопка выхода */
+  /** 🔹 Кнопка выхода с редиректом на '/' */
   private initLogoutButton() {
-    const logoutBtn = this._element?.querySelector('#login-button');
+    const logoutBtn = this._element?.querySelector<HTMLButtonElement>('#login-button');
     if (!logoutBtn) return;
 
-    logoutBtn.addEventListener('click', async () => {
-      const AuthService = (await import('../../services/AuthService')).default;
-      await AuthService.logout();
-      const app = (window as any).app;
-      app?.getRouter()?.go('/');
+    logoutBtn.addEventListener('click', () => {
+      LogoutService.logoutAndRedirect();
     });
   }
 }
+

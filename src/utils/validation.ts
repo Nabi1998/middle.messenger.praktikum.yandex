@@ -23,7 +23,7 @@ const validationRules: ValidationRules = {
     message: 'Неверный email (пример: user@mail.com).',
   },
   password: {
-    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    regex: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
   },
   password_repeat: {
@@ -40,15 +40,15 @@ const validationRules: ValidationRules = {
   },
   // Добавляем недостающие правила
   oldPassword: {
-    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    regex: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
   },
   newPassword: {
-    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    regex: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
   },
   repeatPassword: {
-    regex: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
+    regex: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     message: 'От 8 до 40 символов, хотя бы одна заглавная и цифра.',
   },
   display_name: {
@@ -75,10 +75,10 @@ export function validateField(input: HTMLInputElement, errorEl?: HTMLElement | n
 export function setupFormValidation(form: HTMLFormElement): () => boolean {
   form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
     const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
-    
+
     // Валидация при потере фокуса
     input.addEventListener('blur', () => validateField(input, errorEl));
-    
+
     // Валидация при вводе (в реальном времени)
     input.addEventListener('input', () => {
       if (input.value.trim() === '') {

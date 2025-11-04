@@ -2,6 +2,7 @@ import Block from '../../services/Block';
 import profileTemplateRaw from './profilePage.hbs?raw';
 import AuthService from '../../services/AuthService';
 import AuthAPI from '../../services/AuthAPI';
+import LogoutService from '../../services/LogoutService';
 
 const profileTemplate = profileTemplateRaw as unknown as string;
 
@@ -21,9 +22,7 @@ interface ProfileProps {
 }
 
 export class profilePage extends Block<ProfileProps> {
-  constructor() {
-    super({});
-  }
+
 
   protected render(): string {
     return profileTemplate;
@@ -53,7 +52,7 @@ export class profilePage extends Block<ProfileProps> {
       const avatarDiv = this._element?.querySelector<HTMLElement>('.profile-avatar');
       if (avatarDiv) {
         if (avatarFullPath) {
-          avatarDiv.style.backgroundImage = `url(${avatarFullPath})`;
+          avatarDiv.style.backgroundImage = `url("${avatarFullPath}")`;
           avatarDiv.style.backgroundSize = 'cover';
           avatarDiv.style.backgroundPosition = 'center';
           avatarDiv.style.borderRadius = '50%';
@@ -82,7 +81,7 @@ export class profilePage extends Block<ProfileProps> {
     // Кнопка выхода
     const logoutBtn = this._element?.querySelector<HTMLButtonElement>('.logout-button');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => this.handleLogout());
+      logoutBtn.addEventListener('click', () => LogoutService.logoutAndRedirect());
     }
 
     // Кнопка редактирования профиля
