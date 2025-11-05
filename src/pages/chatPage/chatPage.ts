@@ -1,8 +1,6 @@
 // import Block from '../../services/Block';
 // import chatTemplateRaw from './chatPage.hbs?raw';
-// import ChatAPI from '../../services/ChatsAPI';
 // import { setupFormValidation } from '../../utils/validation';
-// import type { Message as WSMessage } from '../../services/WebSocketService';
 // import LogoutService from '../../services/LogoutService';
 //
 // const chatTemplate = chatTemplateRaw as unknown as string;
@@ -14,11 +12,6 @@
 //     content: string;
 //     time: string;
 //   };
-// }
-//
-// interface ChatMessage extends WSMessage {
-//   chatId: number;
-//   userId: number;
 // }
 //
 // interface Message {
@@ -45,64 +38,76 @@
 //
 //   async componentDidMount(): Promise<void> {
 //     const AuthService = (await import('../../services/AuthService')).default;
+//     const ChatService = (await import('../../services/ChatService')).default;
+//
 //     this.currentUserId = AuthService.getCurrentUser()?.id ?? 0;
 //
-//     await this.loadChats();
+//     // Подписка на события чатов
+//     ChatService.on('chats:loaded', (chats: Chat[]) => {
+//       this.chats = chats;
+//       this.renderChatList();
+//     });
 //
+//     ChatService.on('chat:deleted', (chatId: number) => {
+//       if (this.activeChatId === chatId) {
+//         this.activeChatId = null;
+//         this.currentMessages = [];
+//         this.renderMessagesPlaceholder();
+//       }
+//       this.renderChatList();
+//     });
+//
+//     // Новые сообщения
+//     ChatService.on('message:received', (msg: Message) => {
+//       if (msg.chatId === this.activeChatId) {
+//         this.currentMessages.push(msg);
+//         this.addMessageToDOM(msg);
+//       }
+//     });
+//
+//     ChatService.on('message:sent', (msg: Message) => {
+//       if (msg.chatId === this.activeChatId) {
+//         this.currentMessages.push(msg);
+//         this.addMessageToDOM(msg);
+//       }
+//     });
+//
+//     // Старые сообщения после joinChat
+//     ChatService.on('messages:loaded', (msgs: Message[]) => {
+//       if (!this.activeChatId) return;
+//       this.currentMessages = msgs;
+//       this.renderMessages(this.activeChatId);
+//     });
+//
+//     // Загрузка чатов
+//     await ChatService.loadChats();
+//
+//     // Инициализация UI
 //     this.initChatClickHandler();
 //     this.initProfileButton();
 //     this.initCreateChatButton();
 //     this.initMessageForm();
 //     this.initLogoutButton();
 //     this.initDeleteChatButton();
-//
-//     const ChatService = (await import('../../services/ChatService')).default;
-//     ChatService.on('message:sent', (msg: unknown) => this.onMessageReceived(msg as ChatMessage));
-//     ChatService.on('message:received', (msg: unknown) => this.onMessageReceived(msg as ChatMessage));
 //   }
 //
-//   private async loadChats() {
-//     try {
-//       this.chats = await ChatAPI.getChats();
-//       const chatList = this._element?.querySelector('.chat-list');
-//       if (!chatList) return;
+//   private renderChatList() {
+//     const chatList = this._element?.querySelector('.chat-list');
+//     if (!chatList) return;
 //
-//       chatList.innerHTML = this.chats
-//         .map(chat => `
-//           <div class="chat-item" data-chat-id="${chat.id}">
-//             <div class="chat-avatar">👤</div>
-//             <div class="chat-info">
-//               <div class="chat-title">${chat.title}</div>
-//               <div class="chat-last-message">${chat.last_message?.content || ''}</div>
-//               <div class="chat-time">${chat.last_message?.time || ''}</div>
-//             </div>
+//     chatList.innerHTML = this.chats
+//       .map(chat => `
+//         <div class="chat-item ${chat.id === this.activeChatId ? 'active' : ''}" data-chat-id="${chat.id}">
+//           <div class="chat-avatar">👤</div>
+//           <div class="chat-info">
+//             <div class="chat-title">${chat.title}</div>
+//             <div class="chat-last-message">${chat.last_message?.content || ''}</div>
+//             <div class="chat-time">${chat.last_message?.time || ''}</div>
 //           </div>
-//         `).join('');
-//     } catch (err) {
-//       console.error('Ошибка загрузки чатов:', err);
-//     }
+//         </div>
+//       `)
+//       .join('');
 //   }
-//
-//   // private initChatClickHandler() {
-//   //   const chatList = this._element?.querySelector('.chat-list');
-//   //   if (!chatList) return;
-//   //
-//   //   chatList.addEventListener('click', async (event) => {
-//   //     const target = (event.target as HTMLElement).closest('.chat-item');
-//   //     if (!target) return;
-//   //
-//   //     const chatId = Number(target.getAttribute('data-chat-id'));
-//   //     this.activeChatId = chatId;
-//   //
-//   //     chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-//   //     target.classList.add('active');
-//   //
-//   //     await this.loadMessages(chatId);
-//   //
-//   //     const tokenData = await ChatAPI.getChatToken(chatId);
-//   //     console.log('🪙 Токен для чата:', tokenData.token);
-//   //   });
-//   // }
 //
 //   private initChatClickHandler() {
 //     const chatList = this._element?.querySelector('.chat-list');
@@ -110,61 +115,67 @@
 //
 //     chatList.addEventListener('click', async (event) => {
 //       const target = (event.target as HTMLElement)?.closest('.chat-item');
-//
-//       if (!(target instanceof HTMLElement)) return; // безопасная проверка
+//       if (!target) return;
 //
 //       const chatIdAttr = target.getAttribute('data-chat-id');
 //       if (!chatIdAttr) return;
 //
 //       const chatId = Number(chatIdAttr);
-//       if (isNaN(chatId)) return; // проверка на корректное число
+//       if (isNaN(chatId)) return;
+//
+//       if (this.activeChatId === chatId) return; // Уже открыт
 //
 //       this.activeChatId = chatId;
-//
 //       chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
 //       target.classList.add('active');
 //
-//       await this.loadMessages(chatId);
+//       const ChatService = (await import('../../services/ChatService')).default;
+//       this.currentMessages = []; // очистка перед загрузкой
+//       this.renderMessagesPlaceholder();
 //
-//       const tokenData = await ChatAPI.getChatToken(chatId);
-//       console.log('🪙 Токен для чата:', tokenData.token);
+//       try {
+//         await ChatService.joinChat(chatId);
+//         // Старые сообщения придут через событие 'messages:loaded'
+//       } catch (error) {
+//         console.error('Ошибка при подключении к чату:', error);
+//       }
 //     });
 //   }
 //
-//   private async loadMessages(chatId: number) {
+//   private renderMessages(chatId: number) {
 //     const messagesContainer = this._element?.querySelector('.chat-messages');
 //     if (!messagesContainer) return;
 //
-//     try {
-//       const ChatService = (await import('../../services/ChatService')).default;
-//       this.currentMessages = await ChatService.getMessages();
+//     messagesContainer.innerHTML = `
+//       <div class="chat-header-active">
+//         <h3>${this.chats.find(c => c.id === chatId)?.title || 'Чат'}</h3>
+//         <button class="delete-chat-btn" style="background-color:red;color:white;padding:8px;border:none;border-radius:5px">Удалить чат</button>
+//       </div>
+//       <div class="messages">
+//         ${this.currentMessages
+//       .map(msg => `
+//             <div class="message ${msg.userId === this.currentUserId ? 'own' : ''}">
+//               <span class="msg-content">${msg.content}</span>
+//               <span class="msg-time">${new Date(msg.time).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}</span>
+//             </div>`)
+//       .join('')}
+//       </div>
+//     `;
 //
-//       messagesContainer.innerHTML = `
-//         <div class="chat-header-active">
-//           <h3>${this.chats.find(c => c.id === chatId)?.title || 'Чат'}</h3>
-//           <button style="background-color: red; color: white; padding: 8px; border: none; border-radius: 5px" class="delete-chat-btn">Удалить чат</button>
-//         </div>
-//         <div class="messages">
-//           ${this.currentMessages
-//         .map(msg => `
-//           <div class="message ${msg.userId === this.currentUserId ? 'own' : ''}">
-//             <span class="msg-content">${msg.content}</span>
-//             <span class="msg-time">${new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-//           </div>`).join('')}
-//         </div>
-//       `;
-//
-//       const messagesDiv = messagesContainer.querySelector('.messages');
-//       if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
-//     } catch (err) {
-//       console.error('Ошибка загрузки сообщений:', err);
-//     }
+//     const messagesDiv = messagesContainer.querySelector('.messages');
+//     if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
 //   }
 //
-//   private onMessageReceived(msg: Message) {
-//     if (msg.chatId !== this.activeChatId) return;
-//     this.addMessageToDOM(msg);
-//     this.currentMessages.push(msg);
+//   private renderMessagesPlaceholder() {
+//     const messagesContainer = this._element?.querySelector('.chat-messages');
+//     if (!messagesContainer) return;
+//
+//     messagesContainer.innerHTML = `
+//       <div class="chat-placeholder">
+//         <h3>Выберите чат для начала общения</h3>
+//         <p>Здесь будут отображаться сообщения выбранного чата</p>
+//       </div>
+//     `;
 //   }
 //
 //   private addMessageToDOM(msg: Message) {
@@ -175,7 +186,7 @@
 //       'beforeend',
 //       `<div class="message ${msg.userId === this.currentUserId ? 'own' : ''}">
 //         <span class="msg-content">${msg.content}</span>
-//         <span class="msg-time">${new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+//         <span class="msg-time">${new Date(msg.time).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}</span>
 //       </div>`
 //     );
 //
@@ -190,32 +201,29 @@
 //
 //     messageForm.addEventListener('submit', async (e) => {
 //       e.preventDefault();
+//       if (!this.activeChatId) return alert('Выберите чат');
 //
 //       const messageInput = messageForm.querySelector<HTMLInputElement>('input[name="message"]');
 //       if (!messageInput || !validateAll() || !messageInput.value.trim()) return;
-//       if (!this.activeChatId) return alert('Выберите чат');
 //
 //       const content = messageInput.value.trim();
+//       const ChatService = (await import('../../services/ChatService')).default;
+//       await ChatService.sendMessage(this.activeChatId, content);
 //
-//       try {
-//         const ChatService = (await import('../../services/ChatService')).default;
-//         await ChatService.sendMessage(this.activeChatId, content);
+//       messageInput.value = '';
+//     });
+//   }
 //
-//         const msg: Message = {
-//           id: Date.now(),
-//           chatId: this.activeChatId,
-//           userId: this.currentUserId,
-//           content,
-//           time: new Date().toISOString(),
-//         };
+//   private initCreateChatButton() {
+//     const newChatBtn = this._element?.querySelector('.new-chat-btn');
+//     if (!newChatBtn) return;
 //
-//         this.addMessageToDOM(msg);
-//         this.currentMessages.push(msg);
-//         messageInput.value = '';
-//       } catch (err) {
-//         console.error('Ошибка отправки сообщения:', err);
-//         alert('Не удалось отправить сообщение');
-//       }
+//     newChatBtn.addEventListener('click', async () => {
+//       const chatTitle = prompt('Введите название нового чата');
+//       if (!chatTitle) return;
+//
+//       const ChatService = (await import('../../services/ChatService')).default;
+//       await ChatService.createChat({ title: chatTitle });
 //     });
 //   }
 //
@@ -230,24 +238,12 @@
 //       const confirmDelete = confirm('Вы действительно хотите удалить этот чат?');
 //       if (!confirmDelete) return;
 //
-//       try {
-//         await ChatAPI.deleteChat(this.activeChatId);
+//       const ChatService = (await import('../../services/ChatService')).default;
+//       await ChatService.deleteChat(this.activeChatId);
 //
-//         this.activeChatId = null;
-//         this.currentMessages = [];
-//
-//         messagesContainer.innerHTML = `
-//           <div class="chat-placeholder">
-//             <h3>Выберите чат для начала общения</h3>
-//             <p>Здесь будут отображаться сообщения выбранного чата</p>
-//           </div>
-//         `;
-//
-//         await this.loadChats();
-//       } catch (err) {
-//         console.error('Ошибка удаления чата:', err);
-//         alert('Не удалось удалить чат');
-//       }
+//       this.activeChatId = null;
+//       this.currentMessages = [];
+//       this.renderMessagesPlaceholder();
 //     });
 //   }
 //
@@ -260,24 +256,6 @@
 //     });
 //   }
 //
-//   private initCreateChatButton() {
-//     const newChatBtn = this._element?.querySelector('.new-chat-btn');
-//     if (!newChatBtn) return;
-//
-//     newChatBtn.addEventListener('click', async () => {
-//       const chatTitle = prompt('Введите название нового чата');
-//       if (!chatTitle) return;
-//
-//       try {
-//         await ChatAPI.createChat({ title: chatTitle });
-//         await this.loadChats();
-//       } catch (err) {
-//         console.error('Ошибка создания чата:', err);
-//       }
-//     });
-//   }
-//
-//   /** 🔹 Кнопка выхода с редиректом на '/' */
 //   private initLogoutButton() {
 //     const logoutBtn = this._element?.querySelector<HTMLButtonElement>('#login-button');
 //     if (!logoutBtn) return;
@@ -287,7 +265,6 @@
 //     });
 //   }
 // }
-//
 
 import Block from '../../services/Block';
 import chatTemplateRaw from './chatPage.hbs?raw';
@@ -333,15 +310,27 @@ export class chatPage extends Block {
 
     this.currentUserId = AuthService.getCurrentUser()?.id ?? 0;
 
+    // Восстанавливаем выбранный чат из localStorage
+    const savedChatId = localStorage.getItem('activeChatId');
+    if (savedChatId) this.activeChatId = Number(savedChatId);
+
     // Подписка на события чатов
     ChatService.on('chats:loaded', (chats: Chat[]) => {
       this.chats = chats;
       this.renderChatList();
+
+      // Если есть сохранённый активный чат — выделяем и подключаемся
+      if (this.activeChatId) {
+        const chatItem = this._element?.querySelector(`.chat-item[data-chat-id="${this.activeChatId}"]`);
+        if (chatItem) chatItem.classList.add('active');
+        ChatService.joinChat(this.activeChatId);
+      }
     });
 
     ChatService.on('chat:deleted', (chatId: number) => {
       if (this.activeChatId === chatId) {
         this.activeChatId = null;
+        localStorage.removeItem('activeChatId');
         this.currentMessages = [];
         this.renderMessagesPlaceholder();
       }
@@ -417,6 +406,8 @@ export class chatPage extends Block {
       if (this.activeChatId === chatId) return; // Уже открыт
 
       this.activeChatId = chatId;
+      localStorage.setItem('activeChatId', chatId.toString()); // сохраняем выбранный чат
+
       chatList.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
       target.classList.add('active');
 
@@ -533,6 +524,7 @@ export class chatPage extends Block {
       await ChatService.deleteChat(this.activeChatId);
 
       this.activeChatId = null;
+      localStorage.removeItem('activeChatId');
       this.currentMessages = [];
       this.renderMessagesPlaceholder();
     });
@@ -556,4 +548,3 @@ export class chatPage extends Block {
     });
   }
 }
-
