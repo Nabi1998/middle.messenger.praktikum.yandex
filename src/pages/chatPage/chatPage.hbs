@@ -1,8 +1,51 @@
+<!--<div class="chat-page">-->
+<!--  <div class="chat-sidebar">-->
+<!--    <div class="chat-header">-->
+<!--      <h2>Чаты</h2>-->
+<!--      <button class="profile-btn" data-route="/settings"><span style="filter: brightness(0) invert(1); display: block; color: white">👤</span></button>-->
+<!--      <button class="new-chat-btn">+</button>-->
+<!--      {{> Button type="submit" id="login-button" text="Выйти"}}-->
+<!--    </div>-->
+<!--    <div class="chat-list">-->
+<!--      {{#each chats}}-->
+<!--        <div class="chat-item" data-chat-id="{{id}}">-->
+<!--          <div class="chat-avatar">👤</div>-->
+<!--          <div class="chat-info">-->
+<!--            <div class="chat-title">{{name}}</div>-->
+<!--            <div class="chat-last-message">{{lastMessage}}</div>-->
+<!--            <div class="chat-time">{{time}}</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      {{/each}}-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="chat-main">-->
+<!--    <div class="chat-messages">-->
+<!--      <div class="chat-placeholder">-->
+<!--        <h3>Выберите чат для начала общения</h3>-->
+<!--        <p>Здесь будут отображаться сообщения выбранного чата</p>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="chat-input-area">-->
+<!--      <form class="message-form">-->
+<!--        <div class="input-wrapper">-->
+<!--          {{> Input name="message" type="text" placeholder="Введите сообщение..." }}-->
+<!--        </div>-->
+<!--        <button type="submit" class="send-btn">Отправить</button>-->
+<!--      </form>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
 <div class="chat-page">
   <div class="chat-sidebar">
     <div class="chat-header">
       <h2>Чаты</h2>
-      <button class="profile-btn" data-route="/settings"><span style="filter: brightness(0) invert(1); display: block; color: white">👤</span></button>
+      <button class="profile-btn" data-route="/settings">
+        <span style="filter: brightness(0) invert(1); display: block; color: white">👤</span>
+      </button>
       <button class="new-chat-btn">+</button>
       {{> Button type="submit" id="login-button" text="Выйти"}}
     </div>
@@ -29,12 +72,16 @@
     </div>
 
     <div class="chat-input-area">
+<!--      <button class="add-user-btn">Добавить пользователя</button>-->
+<!--      <button class="remove-user-btn">Удалить пользователя</button>-->
       <form class="message-form">
         <div class="input-wrapper">
           {{> Input name="message" type="text" placeholder="Введите сообщение..." }}
         </div>
         <button type="submit" class="send-btn">Отправить</button>
+
       </form>
     </div>
   </div>
 </div>
+

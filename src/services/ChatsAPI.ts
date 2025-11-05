@@ -61,6 +61,7 @@ class ChatsAPI extends HTTPTransport {
   }
 
   getChatToken(chatId: number): Promise<{ token: string }> {
+    console.log(chatId, 'chatId');
     return this.post(`/token/${chatId}`).then((response) => {
       if (response.status === 200) {
         return JSON.parse(response.response);

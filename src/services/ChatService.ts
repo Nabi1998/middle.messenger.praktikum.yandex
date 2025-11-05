@@ -264,21 +264,52 @@ class ChatService extends EventBus {
   }
 
   /** Присоединение к чату */
+  // async joinChat(chatId: number): Promise<void> {
+  //   if (!this.chats.length) await this.loadChats();
+  //
+  //   const chat = this.chats.find(c => c.id === chatId);
+  //   if (!chat) throw new Error('Чат не найден');
+  //
+  //   if (this.currentChat) this.leaveCurrentChat();
+  //
+  //   this.currentChat = chat;
+  //   this.messages = [];
+  //   this._isLoadingMessages = true;
+  //
+  //   await WebSocketService.connect(this.currentUserId, chatId);
+  //   this.emit('chat:joined', chat);
+  // }
+
+  /** Присоединение к чату */
   async joinChat(chatId: number): Promise<void> {
     if (!this.chats.length) await this.loadChats();
-
     const chat = this.chats.find(c => c.id === chatId);
     if (!chat) throw new Error('Чат не найден');
 
+    // Если уже подключены к этому чату — выходим
+    if (this.currentChat?.id === chatId && WebSocketService.isConnected()) {
+      console.log(`🔗 Уже подключены к чату ${chatId}`);
+      return;
+    }
+
+    // Если был подключён другой чат — отключаемся
     if (this.currentChat) this.leaveCurrentChat();
 
     this.currentChat = chat;
     this.messages = [];
     this._isLoadingMessages = true;
 
-    await WebSocketService.connect(chatId);
+    // ✅ Получаем токен перед подключением
+    const response = await ChatsAPI.getChatToken(chatId);
+    const token = response?.token;
+    if (!token) throw new Error('Не удалось получить токен для чата');
+
+    // ✅ Подключаемся к WebSocket с токеном
+    await WebSocketService.connect(this.currentUserId, chatId, token);
+
     this.emit('chat:joined', chat);
   }
+
 
   /** Покидаем текущий чат */
   leaveCurrentChat(): void {
