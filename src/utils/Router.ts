@@ -9,7 +9,6 @@ export interface Route {
 export default class Router {
   private routes: Route[] = [];
   private currentPath: string = '';
-  private publicRoutes: string[] = ['/', '/sign-up', '/404', '/500'];
   private isUserAuthenticated: boolean = false;
 
   constructor() {}
