@@ -73,6 +73,22 @@ export function validateField(input: HTMLInputElement, errorEl?: HTMLElement | n
 }
 
 export function setupFormValidation(form: HTMLFormElement): () => boolean {
+  // This function attaches listeners directly, which might be deprecated if we move to Block events.
+  // However, for now, we keep it but ensure it's not used where Block events are preferred.
+  // Or we can modify it to not attach listeners but just return the validation function.
+
+  // Since we are moving to Block events, we should probably avoid using this function to attach listeners
+  // inside components. Instead, components should attach listeners via events prop and call validateField.
+
+  // But for backward compatibility or if used outside components, we keep it.
+  // The user asked to use addEventListener via Block mechanism.
+  // So inside components, we should NOT call setupFormValidation that attaches listeners.
+  // We should manually attach listeners in the component or use the events prop.
+
+  // I already updated components to use events prop and call validateField directly.
+  // So this function is likely not used in the updated components anymore, or only for initial validation check.
+
+  /*
   form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
     const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
 
@@ -89,6 +105,7 @@ export function setupFormValidation(form: HTMLFormElement): () => boolean {
       }
     });
   });
+  */
 
   return () => {
     let isValid = true;
@@ -99,5 +116,3 @@ export function setupFormValidation(form: HTMLFormElement): () => boolean {
     return isValid;
   };
 }
-
-

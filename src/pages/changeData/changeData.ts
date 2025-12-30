@@ -1,7 +1,7 @@
 import Block from '../../services/Block';
 import changeDataTemplateRaw from './changeData.hbs?raw';
 import UserAPI from '../../services/UserAPI';
-import { setupFormValidation } from '../../utils/validation'; // ✅ добавлен правильный импорт
+import { validateField } from '../../utils/validation';
 
 const changeDataTemplate = changeDataTemplateRaw as unknown as string;
 
@@ -12,59 +12,87 @@ interface ChangeDataProps {
 
 export class changeDataPage extends Block<ChangeDataProps> {
   constructor() {
-    super({});
+    super({
+      events: {
+        submit: (e: Event) => this.onSubmit(e),
+        focusout: (e: Event) => this.onFocusOut(e),
+        input: (e: Event) => this.onInput(e),
+        click: (e: Event) => this.onClick(e),
+      },
+    });
   }
 
   protected render(): string {
     return changeDataTemplate;
   }
 
-  protected componentDidMount() {
-    const form = this._element?.querySelector<HTMLFormElement>('.change-password-form');
-    if (!form) return;
+  protected componentDidMount() {}
 
-    // ✅ Используем импорт напрямую, а не window
-    const validateAll = setupFormValidation(form);
+  private onFocusOut(e: Event) {
+    const input = e.target as HTMLInputElement;
+    if (input.tagName === 'INPUT') {
+      const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+      validateField(input, errorEl);
+    }
+  }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (!validateAll() || !this.passwordsMatch(form)) {
-        console.error('❌ Ошибка валидации смены пароля');
-        return;
+  private onInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    if (input.tagName === 'INPUT') {
+      const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+      if (input.value.trim() === '') {
+        if (errorEl) errorEl.textContent = '';
+        input.classList.remove('invalid');
+      } else {
+        validateField(input, errorEl);
       }
+    }
+  }
 
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
+  private onClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (target.closest('.back-button')) {
+      history.back();
+    }
+  }
 
-      try {
-        // ✅ Запрос на смену пароля
-        await UserAPI.changePassword({
-          oldPassword: String(data.oldPassword),
-          newPassword: String(data.newPassword),
-        });
+  private async onSubmit(e: Event) {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
 
-        console.log('✅ Пароль успешно изменен');
-        // ✅ После успешной смены пароля — редирект на профиль
-        const app = (window as any).app;
-        if (app?.getRouter) {
-          app.getRouter().go('/settings');
-        } else {
-          location.hash = 'settings';
-        }
-      } catch (error) {
-        console.error('Ошибка смены пароля:', error);
-        this.setProps({
-          errorMessage: (error as Error).message || 'Ошибка смены пароля',
-        });
-      }
+    let isValid = true;
+    form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+      const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+      if (!validateField(input, errorEl)) isValid = false;
     });
 
-    // Кнопка "Назад"
-    const backBtn = this._element?.querySelector<HTMLElement>('.back-button');
-    if (backBtn) {
-      backBtn.addEventListener('click', () => {
-        history.back();
+    if (!isValid || !this.passwordsMatch(form)) {
+      console.error('❌ Ошибка валидации смены пароля');
+      return;
+    }
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      // ✅ Запрос на смену пароля
+      await UserAPI.changePassword({
+        oldPassword: String(data.oldPassword),
+        newPassword: String(data.newPassword),
+      });
+
+      console.log('✅ Пароль успешно изменен');
+      // ✅ После успешной смены пароля — редирект на профиль
+      const app = (window as any).app;
+      if (app?.getRouter) {
+        app.getRouter().go('/settings');
+      } else {
+        location.hash = 'settings';
+      }
+    } catch (error) {
+      console.error('Ошибка смены пароля:', error);
+      this.setProps({
+        errorMessage: (error as Error).message || 'Ошибка смены пароля',
       });
     }
   }

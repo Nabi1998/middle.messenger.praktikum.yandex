@@ -137,3 +137,131 @@ html {
   margin-left: 1rem;
   padding: 0.8rem 1.2rem;
 }
+
+/* Modals */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.chat-header-active {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* Search Results */
+.search-results {
+  margin-top: 15px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.add-found-user-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.add-found-user-btn:hover {
+  background-color: color-mix(in srgb, var(--primary-color) 80%, black);
+}
+
+.add-found-user-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Added Users List */
+.added-users-container {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.added-users-container.hidden {
+  display: none;
+}
+
+.added-users-container h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--secondary-color);
+}
+
+.added-users-list {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.added-user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 14px;
+  color: green;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.remove-added-user-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 5px;
+  transition: transform 0.2s;
+}
+
+.remove-added-user-btn:hover {
+  transform: scale(1.2);
+}

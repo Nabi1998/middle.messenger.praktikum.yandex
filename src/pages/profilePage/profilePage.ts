@@ -22,7 +22,13 @@ interface ProfileProps {
 }
 
 export class profilePage extends Block<ProfileProps> {
-
+  constructor() {
+    super({
+      events: {
+        click: (e: Event) => this.onClick(e),
+      },
+    });
+  }
 
   protected render(): string {
     return profileTemplate;
@@ -63,9 +69,6 @@ export class profilePage extends Block<ProfileProps> {
         }
       }
 
-      // Навешиваем обработчики кнопок
-      this.bindEvents();
-
     } catch (error) {
       console.error('Ошибка загрузки профиля:', error);
     }
@@ -77,51 +80,40 @@ export class profilePage extends Block<ProfileProps> {
     return true;
   }
 
-  private bindEvents() {
+  private onClick(e: Event) {
+    const target = e.target as HTMLElement;
+
     // Кнопка выхода
-    const logoutBtn = this._element?.querySelector<HTMLButtonElement>('.logout-button');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => LogoutService.logoutAndRedirect());
+    if (target.closest('.logout-button')) {
+      LogoutService.logoutAndRedirect();
+      return;
     }
 
     // Кнопка редактирования профиля
-    const editBtn = this._element?.querySelector<HTMLAnchorElement>('.action-link[data-route="/settings/edit"]');
+    const editBtn = target.closest('.action-link[data-route="/settings/edit"]');
     if (editBtn) {
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const app = (window as any).app;
-        app?.getRouter().go('/settings/edit');
-      });
+      e.preventDefault();
+      const app = (window as any).app;
+      app?.getRouter().go('/settings/edit');
+      return;
     }
 
     // Кнопка изменения пароля (если есть)
-    const passwordBtn = this._element?.querySelector<HTMLAnchorElement>('.action-link[data-route="/settings/password"]');
+    const passwordBtn = target.closest('.action-link[data-route="/settings/password"]');
     if (passwordBtn) {
-      passwordBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const app = (window as any).app;
-        app?.getRouter().go('/settings/password');
-      });
+      e.preventDefault();
+      const app = (window as any).app;
+      app?.getRouter().go('/settings/password');
+      return;
     }
 
     // Кнопка возврата к чату
-    const messengerBtn = this._element?.querySelector<HTMLAnchorElement>('.action-link[data-route="/messenger"]');
+    const messengerBtn = target.closest('.action-link[data-route="/messenger"]');
     if (messengerBtn) {
-      messengerBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const app = (window as any).app;
-        app?.getRouter().go('/messenger');
-      });
-    }
-  }
-
-  private async handleLogout() {
-    try {
-      await AuthService.logout();
+      e.preventDefault();
       const app = (window as any).app;
-      app?.getRouter().go('/');
-    } catch (error) {
-      console.error('Ошибка при выходе:', error);
+      app?.getRouter().go('/messenger');
+      return;
     }
   }
 }

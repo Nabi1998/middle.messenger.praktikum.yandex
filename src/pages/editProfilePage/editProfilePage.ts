@@ -1,6 +1,6 @@
 import Block from '../../services/Block';
 import editProfileTemplateRaw from './editProfilePage.hbs?raw';
-import { setupFormValidation } from '../../utils/validation';
+import { validateField } from '../../utils/validation';
 import AuthService from '../../services/AuthService';
 import AuthAPI from '../../services/AuthAPI';
 import UserAPI from '../../services/UserAPI';
@@ -24,7 +24,13 @@ interface EditProfileProps {
 
 export class editProfilePage extends Block<EditProfileProps> {
   constructor() {
-    super({});
+    super({
+      events: {
+        submit: (e: Event) => this.onSubmit(e),
+        click: (e: Event) => this.onClick(e),
+        change: (e: Event) => this.onChange(e),
+      },
+    });
   }
 
   private setAvatar(avatarDiv: HTMLElement, avatarPath: string | null) {
@@ -64,146 +70,9 @@ export class editProfilePage extends Block<EditProfileProps> {
         });
       }
 
-      // Элементы DOM
-      const form = this._element?.querySelector<HTMLFormElement>('.edit-profile-form');
-      const avatarModal = this._element?.querySelector<HTMLElement>('#avatar-modal');
-      const openAvatarBtn = this._element?.querySelector<HTMLElement>('#open-avatar-modal');
-      const closeAvatarBtn = this._element?.querySelector<HTMLElement>('#close-avatar-modal');
-      const fileInput = this._element?.querySelector<HTMLInputElement>('.edit-profile-avatar-input');
       const avatarPreview = this._element?.querySelector<HTMLElement>('.edit-profile-avatar');
-
-      // Отображаем текущий аватар
       this.setAvatar(avatarPreview!, this.props.avatar ?? null);
 
-      if (!form) return;
-
-      // Валидация формы
-      const validateAll = setupFormValidation(form);
-
-      // Сабмит формы через JS
-      // form.addEventListener('submit', async (e) => {
-      //   e.preventDefault(); // ⚠️ ключевой момент — форма не должна сабмититься нативно
-      //
-      //   const formData = new FormData(form);
-      //   const data = Object.fromEntries(formData.entries()) as Partial<User>;
-      //
-      //   if (!validateAll()) {
-      //     console.error('❌ Ошибка валидации профиля');
-      //     return;
-      //   }
-      //
-      //   try {
-      //     const updatedUser = await UserAPI.changeProfile(data);
-      //     const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
-      //
-      //     this.setProps({ ...this.props, ...updatedUser, avatar: avatarPath });
-      //     this.setAvatar(avatarPreview!, avatarPath);
-      //
-      //     // Перенаправление через роутер
-      //     const app = (window as any).app;
-      //     if (app?.getRouter) {
-      //       app.getRouter().go('/settings');
-      //     } else {
-      //       location.hash = 'settings';
-      //     }
-      //   } catch (err) {
-      //     console.error('❌ Ошибка при сохранении профиля:', err);
-      //   }
-      // });
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // ⚠️ форма не должна сабмититься нативно
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries()) as Partial<User>;
-
-        if (!validateAll()) {
-          console.error('❌ Ошибка валидации профиля');
-          return;
-        }
-
-        try {
-          // Отправляем только необходимые поля
-          const updatedUser = await UserAPI.changeProfile({
-            first_name: data.first_name as string,
-            second_name: data.second_name as string,
-            display_name: data.display_name as string,
-            login: data.login as string,
-            email: data.email as string,
-            phone: data.phone as string
-          });
-
-          const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
-
-          // Передаём только поля, которые есть в EditProfileProps
-          this.setProps({
-            ...this.props,
-            first_name: updatedUser.first_name,
-            second_name: updatedUser.second_name,
-            display_name: updatedUser.display_name,
-            login: updatedUser.login,
-            email: updatedUser.email,
-            phone: updatedUser.phone,
-            avatar: avatarPath
-          });
-
-          this.setAvatar(avatarPreview!, avatarPath);
-
-          // Перенаправление через роутер
-          const app = (window as any).app;
-          if (app?.getRouter) {
-            app.getRouter().go('/settings');
-          } else {
-            location.hash = 'settings';
-          }
-        } catch (err) {
-          console.error('❌ Ошибка при сохранении профиля:', err);
-        }
-      });
-
-      // Работа с модальным окном аватара
-      if (openAvatarBtn && avatarModal) openAvatarBtn.addEventListener('click', () => avatarModal.classList.remove('hidden'));
-      if (closeAvatarBtn && avatarModal) closeAvatarBtn.addEventListener('click', () => avatarModal.classList.add('hidden'));
-      if (avatarModal) avatarModal.addEventListener('click', (e) => { if (e.target === avatarModal) avatarModal.classList.add('hidden'); });
-
-      // Загрузка нового аватара
-      if (fileInput) {
-        fileInput.addEventListener('change', async (e) => {
-          e.preventDefault();
-          const target = e.target as HTMLInputElement;
-          if (!target.files?.length) return;
-
-          const file = target.files[0];
-
-          // Превью аватара
-          const reader = new FileReader();
-          reader.onload = () => this.setAvatar(avatarPreview!, reader.result as string);
-          reader.readAsDataURL(file);
-
-          // Отправка аватара на сервер
-          const avatarFormData = new FormData();
-          avatarFormData.append('avatar', file);
-
-          try {
-            const updatedUser = await UserAPI.changeAvatar(avatarFormData);
-            const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
-
-            this.setProps({ ...this.props, avatar: avatarPath });
-            this.setAvatar(avatarPreview!, avatarPath);
-
-            const app = (window as any).app;
-            if (app?.getRouter) {
-              app.getRouter().go('/settings');
-            } else {
-              location.hash = 'settings';
-            }
-
-            if (avatarModal) avatarModal.classList.add('hidden');
-          } catch (err) {
-            console.error('❌ Ошибка при загрузке аватара:', err);
-          }
-        });
-      }
     } catch (err) {
       console.error('❌ Ошибка загрузки данных пользователя:', err);
     }
@@ -216,7 +85,117 @@ export class editProfilePage extends Block<EditProfileProps> {
     }
     return JSON.stringify(oldProps) !== JSON.stringify(newProps);
   }
+
+  private async onSubmit(e: Event) {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+
+    let isValid = true;
+    form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+      const errorEl = input.parentElement?.querySelector<HTMLElement>('.error-message');
+      if (!validateField(input, errorEl)) isValid = false;
+    });
+
+    if (!isValid) {
+      console.error('❌ Ошибка валидации профиля');
+      return;
+    }
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries()) as Partial<User>;
+
+    try {
+      // Отправляем только необходимые поля
+      const updatedUser = await UserAPI.changeProfile({
+        first_name: data.first_name as string,
+        second_name: data.second_name as string,
+        display_name: data.display_name as string,
+        login: data.login as string,
+        email: data.email as string,
+        phone: data.phone as string
+      });
+
+      const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
+      const avatarPreview = this._element?.querySelector<HTMLElement>('.edit-profile-avatar');
+
+      // Передаём только поля, которые есть в EditProfileProps
+      this.setProps({
+        ...this.props,
+        first_name: updatedUser.first_name,
+        second_name: updatedUser.second_name,
+        display_name: updatedUser.display_name,
+        login: updatedUser.login,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        avatar: avatarPath
+      });
+
+      this.setAvatar(avatarPreview!, avatarPath);
+
+      // Перенаправление через роутер
+      const app = (window as any).app;
+      if (app?.getRouter) {
+        app.getRouter().go('/settings');
+      } else {
+        location.hash = 'settings';
+      }
+    } catch (err) {
+      console.error('❌ Ошибка при сохранении профиля:', err);
+    }
+  }
+
+  private onClick(e: Event) {
+    const target = e.target as HTMLElement;
+    const avatarModal = this._element?.querySelector<HTMLElement>('#avatar-modal');
+
+    if (target.id === 'open-avatar-modal' && avatarModal) {
+      avatarModal.classList.remove('hidden');
+    } else if (target.id === 'close-avatar-modal' && avatarModal) {
+      avatarModal.classList.add('hidden');
+    } else if (target === avatarModal && avatarModal) {
+      avatarModal.classList.add('hidden');
+    } else if (target.closest('.back-button')) {
+      history.back();
+    }
+  }
+
+  private async onChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (target.classList.contains('edit-profile-avatar-input')) {
+      e.preventDefault();
+      if (!target.files?.length) return;
+
+      const file = target.files[0];
+      const avatarPreview = this._element?.querySelector<HTMLElement>('.edit-profile-avatar');
+      const avatarModal = this._element?.querySelector<HTMLElement>('#avatar-modal');
+
+      // Превью аватара
+      const reader = new FileReader();
+      reader.onload = () => this.setAvatar(avatarPreview!, reader.result as string);
+      reader.readAsDataURL(file);
+
+      // Отправка аватара на сервер
+      const avatarFormData = new FormData();
+      avatarFormData.append('avatar', file);
+
+      try {
+        const updatedUser = await UserAPI.changeAvatar(avatarFormData);
+        const avatarPath = updatedUser.avatar ? BASE_URL + updatedUser.avatar : null;
+
+        this.setProps({ ...this.props, avatar: avatarPath });
+        this.setAvatar(avatarPreview!, avatarPath);
+
+        const app = (window as any).app;
+        if (app?.getRouter) {
+          app.getRouter().go('/settings');
+        } else {
+          location.hash = 'settings';
+        }
+
+        if (avatarModal) avatarModal.classList.add('hidden');
+      } catch (err) {
+        console.error('❌ Ошибка при загрузке аватара:', err);
+      }
+    }
+  }
 }
-
-
-

@@ -4,23 +4,5 @@ import { setupFormValidation } from '../../utils/validation';
 import { serializeForm } from '../../utils/form';
 
 export function initLoginPage(): void {
-  const form = document.querySelector<HTMLFormElement>('.login-form');
-  if (!form) return;
-
-  const validateAll = setupFormValidation(form);
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const isValid = validateAll();
-
-    if (isValid) {
-      const data = serializeForm(form);
-      console.warn('✅ Данные формы:', data);
-    } else {
-      console.error('❌ Ошибка валидации');
-    }
-  });
+  // Logic moved to loginPage.ts component
 }
-
-

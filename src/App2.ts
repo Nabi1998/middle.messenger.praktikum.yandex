@@ -204,7 +204,7 @@ export default class App {
     this.appElement = document.getElementById('app');
     this.router = new Router();
     this.setupRoutes();
-    this.setupGlobalNavigation();
+    // this.setupGlobalNavigation(); // Removed global navigation listener
     this.startApp();
   }
 
@@ -274,30 +274,30 @@ export default class App {
     this.currentPage = page;
   }
 
-  private setupGlobalNavigation(): void {
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-
-      const route = target.getAttribute?.('data-route');
-      if (route) {
-        e.preventDefault();
-        this.router.go(route);
-        return;
-      }
-
-      if (target.matches('.back-button') || (target.matches('button, a') && target.textContent?.includes('Назад'))) {
-        e.preventDefault();
-        this.router.back();
-        return;
-      }
-
-      if (target.matches('.logout-button') || (target.matches('button, a') && target.textContent?.includes('Выйти'))) {
-        e.preventDefault();
-        this.handleLogout();
-        return;
-      }
-    });
-  }
+  // private setupGlobalNavigation(): void {
+  //   document.addEventListener('click', (e) => {
+  //     const target = e.target as HTMLElement;
+  //
+  //     const route = target.getAttribute?.('data-route');
+  //     if (route) {
+  //       e.preventDefault();
+  //       this.router.go(route);
+  //       return;
+  //     }
+  //
+  //     if (target.matches('.back-button') || (target.matches('button, a') && target.textContent?.includes('Назад'))) {
+  //       e.preventDefault();
+  //       this.router.back();
+  //       return;
+  //     }
+  //
+  //     if (target.matches('.logout-button') || (target.matches('button, a') && target.textContent?.includes('Выйти'))) {
+  //       e.preventDefault();
+  //       this.handleLogout();
+  //       return;
+  //     }
+  //   });
+  // }
 
   private async handleLogout(): Promise<void> {
     try {

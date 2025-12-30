@@ -14,20 +14,56 @@ interface ErrorProps {
 
 export class errorPage extends Block<ErrorProps> {
   constructor(props: ErrorProps) {
-    super(props);
+    super({
+      ...props,
+      events: {
+        click: (e: Event) => this.onClick(e),
+      },
+    });
   }
 
   protected render(): string {
     return errorPageTemplate;
   }
+
+  private onClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A' && target.getAttribute('href') === '/messenger') {
+      e.preventDefault();
+      const app = (window as any).app;
+      if (app && app.getRouter) {
+        app.getRouter().go('/messenger');
+      } else {
+        location.hash = 'chat';
+      }
+    }
+  }
 }
 
 export class errorPageTwo extends Block<ErrorProps> {
   constructor(props: ErrorProps) {
-    super(props);
+    super({
+      ...props,
+      events: {
+        click: (e: Event) => this.onClick(e),
+      },
+    });
   }
 
   protected render(): string {
     return errorPageTwoTemplate;
+  }
+
+  private onClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A' && target.getAttribute('href') === '/messenger') {
+      e.preventDefault();
+      const app = (window as any).app;
+      if (app && app.getRouter) {
+        app.getRouter().go('/messenger');
+      } else {
+        location.hash = 'chat';
+      }
+    }
   }
 }
