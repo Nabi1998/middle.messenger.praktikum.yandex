@@ -172,60 +172,6 @@ export default class App {
     }
   }
 
-  // private setupGlobalNavigation(): void {
-  //   // Обработчики для навигации
-  //   document.addEventListener('click', (e) => {
-  //     const target = e.target as HTMLElement;
-  //
-  //     // Обработка ссылок с data-route атрибутом
-  //     if (target.matches('[data-route]')) {
-  //       e.preventDefault();
-  //       const route = target.getAttribute('data-route');
-  //       if (route) {
-  //         this.router.go(route);
-  //       }
-  //       return; // Важно: выходим после обработки
-  //     }
-  //
-  //     // Обработка кнопки "Назад" - только для кнопок и ссылок
-  //     if (target.matches('.back-button') ||
-  //         (target.matches('button, a') && target.textContent?.includes('Назад'))) {
-  //       e.preventDefault();
-  //       this.router.back();
-  //       return;
-  //     }
-  //
-  //     // Обработка логаута - только для кнопок и ссылок
-  //     if (target.matches('.logout-button') ||
-  //         (target.matches('button, a') && target.textContent?.includes('Выйти'))) {
-  //       e.preventDefault();
-  //       this.handleLogout();
-  //       return;
-  //     }
-  //
-  //     // Обработка кнопок с data-route в атрибутах
-  //     if (target.matches('button[data-route]')) {
-  //       e.preventDefault();
-  //       const route = target.getAttribute('data-route');
-  //       if (route) {
-  //         this.router.go(route);
-  //       }
-  //       return;
-  //     }
-  //   });
-  // }
-
-  private async handleLogout(): Promise<void> {
-    try {
-      await AuthService.logout();
-      this.router.go('/');
-    } catch (error) {
-      console.error('Ошибка при выходе:', error);
-      // В случае ошибки все равно перенаправляем на главную
-      this.router.go('/');
-    }
-  }
-
   public getRouter(): Router {
     return this.router;
   }

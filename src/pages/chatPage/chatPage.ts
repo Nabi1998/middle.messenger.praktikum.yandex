@@ -3,6 +3,7 @@ import chatTemplateRaw from './chatPage.hbs?raw';
 import { validateField } from '../../utils/validation';
 import LogoutService from '../../services/LogoutService';
 import UserAPI from '../../services/UserAPI';
+import { EventCallback } from '../../services/EventBus';
 
 const chatTemplate = chatTemplateRaw as unknown as string;
 
@@ -62,7 +63,7 @@ export class chatPage extends Block {
     }
 
     // Подписка на события чатов
-    ChatService.on('chats:loaded', (chats: Chat[]) => {
+    ChatService.on('chats:loaded', ((chats: Chat[]) => {
       this.chats = chats;
       this.renderChatList();
 
@@ -72,9 +73,9 @@ export class chatPage extends Block {
         if (chatItem) chatItem.classList.add('active');
         ChatService.joinChat(this.activeChatId);
       }
-    });
+    }) as EventCallback);
 
-    ChatService.on('chat:deleted', (chatId: number) => {
+    ChatService.on('chat:deleted', ((chatId: number) => {
       if (this.activeChatId === chatId) {
         this.activeChatId = null;
         localStorage.removeItem('activeChatId');
@@ -83,29 +84,29 @@ export class chatPage extends Block {
         this.renderMessagesPlaceholder();
       }
       this.renderChatList();
-    });
+    }) as EventCallback);
 
     // Новые сообщения
-    ChatService.on('message:received', (msg: Message) => {
+    ChatService.on('message:received', ((msg: Message) => {
       if (msg.chatId === this.activeChatId) {
         this.currentMessages.push(msg);
         this.addMessageToDOM(msg);
       }
-    });
+    }) as EventCallback);
 
-    ChatService.on('message:sent', (msg: Message) => {
+    ChatService.on('message:sent', ((msg: Message) => {
       if (msg.chatId === this.activeChatId) {
         this.currentMessages.push(msg);
         this.addMessageToDOM(msg);
       }
-    });
+    }) as EventCallback);
 
     // Старые сообщения после joinChat
-    ChatService.on('messages:loaded', (msgs: Message[]) => {
+    ChatService.on('messages:loaded', ((msgs: Message[]) => {
       if (!this.activeChatId) return;
       this.currentMessages = msgs;
       this.renderMessages(this.activeChatId);
-    });
+    }) as EventCallback);
 
     // Загрузка чатов
     await ChatService.loadChats();
