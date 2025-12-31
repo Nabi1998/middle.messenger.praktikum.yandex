@@ -8,7 +8,7 @@ class MockView extends View {
     return '<div>Mock View</div>';
   }
 
-  protected getData(): any {
+  protected getData(): Record<string, unknown> {
     return { test: 'data' };
   }
 }

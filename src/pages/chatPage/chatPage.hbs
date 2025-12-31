@@ -2,8 +2,11 @@
   <div class="chat-sidebar">
     <div class="chat-header">
       <h2>Чаты</h2>
-      <button class="profile-btn" data-page="profilePage">👤</button>
+      <button class="profile-btn" data-route="/settings">
+        <span style="filter: brightness(0) invert(1); display: block; color: white">👤</span>
+      </button>
       <button class="new-chat-btn">+</button>
+      {{> Button type="submit" id="login-button" text="Выйти"}}
     </div>
     <div class="chat-list">
       {{#each chats}}
@@ -18,7 +21,7 @@
       {{/each}}
     </div>
   </div>
-  
+
   <div class="chat-main">
     <div class="chat-messages">
       <div class="chat-placeholder">
@@ -26,7 +29,7 @@
         <p>Здесь будут отображаться сообщения выбранного чата</p>
       </div>
     </div>
-    
+
     <div class="chat-input-area">
       <form class="message-form">
         <div class="input-wrapper">
@@ -34,6 +37,27 @@
         </div>
         <button type="submit" class="send-btn">Отправить</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="add-user-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Добавить/Удалить пользователя</h3>
+      <form id="search-user-form">
+        {{> Input name="login" type="text" placeholder="Логин пользователя" }}
+        <div class="modal-actions">
+          {{> Button type="submit" text="Найти" }}
+          {{> Button type="button" id="cancel-add-user" text="Закрыть" }}
+        </div>
+      </form>
+
+      <div id="search-results" class="search-results"></div>
+
+      <div id="added-users-container" class="added-users-container hidden">
+        <h4>Пользователи в чате:</h4>
+        <div id="added-users-list" class="added-users-list"></div>
+      </div>
     </div>
   </div>
 </div>

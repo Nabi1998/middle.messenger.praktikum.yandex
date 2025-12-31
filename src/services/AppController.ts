@@ -1,11 +1,18 @@
 import EventBus from './EventBus';
 import UserService from './UserService';
 import View from './View';
+import { User } from '../types/api';
+import { RegistrationData, LoginData } from './UserService';
 
 export interface AppState {
   currentPage: string;
-  user: any | null;
+  user: User | null;
   isLoading: boolean;
+}
+
+interface ChangePasswordData {
+  oldPassword: string;
+  newPassword: string;
 }
 
 export default class AppController {
@@ -27,13 +34,51 @@ export default class AppController {
     this.setupEventListeners();
   }
 
+  // private setupEventListeners(): void {
+  //   this.eventBus.on('page:change', this.changePage.bind(this));
+  //   this.eventBus.on('user:login', this.handleLogin.bind(this));
+  //   this.eventBus.on('user:register', this.handleRegister.bind(this));
+  //   this.eventBus.on('user:logout', this.handleLogout.bind(this));
+  //   this.eventBus.on('user:updateProfile', this.handleUpdateProfile.bind(this));
+  //   this.eventBus.on('user:changePassword', this.handleChangePassword.bind(this));
+  // }
+
+
   private setupEventListeners(): void {
-    this.eventBus.on('page:change', this.changePage.bind(this));
-    this.eventBus.on('user:login', this.handleLogin.bind(this));
-    this.eventBus.on('user:register', this.handleRegister.bind(this));
-    this.eventBus.on('user:logout', this.handleLogout.bind(this));
-    this.eventBus.on('user:updateProfile', this.handleUpdateProfile.bind(this));
-    this.eventBus.on('user:changePassword', this.handleChangePassword.bind(this));
+    // Для смены страницы
+    this.eventBus.on('page:change', async (args: unknown) => {
+      const pageName = args as string;
+      await this.changePage(pageName);
+    });
+
+    // Для логина
+    this.eventBus.on('user:login', async (args: unknown) => {
+      const data = args as LoginData;
+      await this.handleLogin(data);
+    });
+
+    // Для регистрации
+    this.eventBus.on('user:register', async (args: unknown) => {
+      const data = args as RegistrationData;
+      await this.handleRegister(data);
+    });
+
+    // Для выхода
+    this.eventBus.on('user:logout', async () => {
+      await this.handleLogout();
+    });
+
+    // Для обновления профиля
+    this.eventBus.on('user:updateProfile', async (args: unknown) => {
+      const data = args as Partial<User>;
+      await this.handleUpdateProfile(data);
+    });
+
+    // Для смены пароля
+    this.eventBus.on('user:changePassword', async (args: unknown) => {
+      const data = args as ChangePasswordData;
+      await this.handleChangePassword(data);
+    });
   }
 
   public registerView(name: string, view: View): void {
@@ -78,15 +123,21 @@ export default class AppController {
 
     this.currentView = view;
     this.setState({ currentPage: pageName });
-    
+
     view.show();
     this.eventBus.emit('page:rendered', pageName);
   }
 
-  private async handleLogin(data: any): Promise<void> {
+  private async handleLogin(data: Record<string, unknown>): Promise<void> {
     try {
       this.setState({ isLoading: true });
-      const user = await this.userService.login(data);
+
+      const loginData: LoginData = {
+        login: String(data.login ?? ''),
+        password: String(data.password ?? ''),
+      };
+
+      const user = await this.userService.login(loginData);
       this.setState({ user, isLoading: false });
       this.eventBus.emit('page:change', 'chatPage');
     } catch (error) {
@@ -96,10 +147,21 @@ export default class AppController {
     }
   }
 
-  private async handleRegister(data: any): Promise<void> {
+
+  private async handleRegister(data: Record<string, unknown>): Promise<void> {
     try {
       this.setState({ isLoading: true });
-      const user = await this.userService.register(data);
+
+      const registrationData: RegistrationData = {
+        first_name: String(data.first_name ?? ''),
+        second_name: String(data.second_name ?? ''),
+        login: String(data.login ?? ''),
+        email: String(data.email ?? ''),
+        phone: String(data.phone ?? ''),
+        password: String(data.password ?? ''),
+      };
+
+      const user = await this.userService.register(registrationData);
       this.setState({ user, isLoading: false });
       this.eventBus.emit('page:change', 'chatPage');
     } catch (error) {
@@ -108,7 +170,6 @@ export default class AppController {
       this.eventBus.emit('error:show', errorMessage);
     }
   }
-
   private async handleLogout(): Promise<void> {
     try {
       await this.userService.logout();
@@ -120,7 +181,7 @@ export default class AppController {
     }
   }
 
-  private async handleUpdateProfile(data: any): Promise<void> {
+  private async handleUpdateProfile(data: Partial<User>): Promise<void> {
     try {
       this.setState({ isLoading: true });
       const user = await this.userService.updateProfile(data);
@@ -133,7 +194,7 @@ export default class AppController {
     }
   }
 
-  private async handleChangePassword(data: any): Promise<void> {
+  private async handleChangePassword(data: ChangePasswordData): Promise<void> {
     try {
       this.setState({ isLoading: true });
       await this.userService.changePassword(data.oldPassword, data.newPassword);

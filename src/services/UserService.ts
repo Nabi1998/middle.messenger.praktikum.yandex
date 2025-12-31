@@ -1,21 +1,24 @@
 import { HttpClient } from '../utils/httpClient';
 
 export interface User {
-  id: string;
+  id: number;
   first_name: string;
   second_name: string;
   login: string;
   email: string;
   phone: string;
-  avatar?: string;
+  avatar: string;
+  display_name?: string;
 }
 
 export interface LoginData {
+  [key: string]: unknown;
   login: string;
   password: string;
 }
 
 export interface RegistrationData {
+  [key: string]: unknown;
   first_name: string;
   second_name: string;
   login: string;

@@ -1,7 +1,14 @@
 <main>
   <div class='profile-page'>
     <div class='profile-card'>
-      <div class='profile-avatar'></div>
+<!--      <div class='profile-avatar'>{{avatar}}</div>-->
+      <div class="profile-avatar">
+        {{#if avatar}}
+          <img src="{{avatar}}" alt="Avatar" class="avatar-img" />
+        {{else}}
+          🖼️
+        {{/if}}
+      </div>
       <div class='profile-name'>{{first_name}}</div>
 
       <div class='profile-info'>
@@ -32,9 +39,9 @@
       </div>
 
       <div class='profile-actions'>
-        <a href='#' class='action-link' data-page='editProfilePage'>Изменить данные</a>
-        <a href='#' class='action-link' data-page='changeData'>Изменить пароль</a>
-        <a href='#' class='action-link' data-page='chatPage'>Вернуться к чату</a>
+        <a href='/edit-profile' class='action-link' data-route='/edit-profile'>Изменить данные</a>
+        <a href='/change-password' class='action-link' data-route='/change-password'>Изменить пароль</a>
+        <a href='/messenger' class='action-link' data-route='/messenger'>Вернуться к чату</a>
         <button type='button' class='logout-button'>Выйти</button>
       </div>
     </div>

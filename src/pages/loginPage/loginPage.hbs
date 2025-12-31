@@ -1,20 +1,17 @@
-<header class="app-header">
- <nav class="nav-bar">
-   <ul class="nav-list">
-     <li class="nav-item"><a href="#login" class="nav-link">Вход</a></li>
-     <li class="nav-item"><a href="#register" class="nav-link">Регистрация</a></li>
-     <li class="nav-item"><a href="#chat" class="nav-link">Чат</a></li>
-     <li class="nav-item"><a href="#profile" class="nav-link">Профиль</a></li>
-     <li class="nav-item"><a href="#profile-edit" class="nav-link">Редактирование профиля</a></li>
-     <li class="nav-item"><a href="#change-data" class="nav-link">Изменить логин и пароль</a></li>
-     <li class="nav-item"><a href="#not-found" class="nav-link">Ошибка 404</a></li>
-     <li class="nav-item"><a href="#not-supported" class="nav-link">Ошибка 505</a></li>
-   </ul>
- </nav>
-</header>
-
-
-
+<!--<header class="app-header">-->
+<!--&lt;!&ndash; <nav class="nav-bar">&ndash;&gt;-->
+<!--&lt;!&ndash;   <ul class="nav-list">&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/" class="nav-link" data-route="/">Вход</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/sign-up" class="nav-link" data-route="/sign-up">Регистрация</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/messenger" class="nav-link" data-route="/messenger">Чат</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/settings" class="nav-link" data-route="/settings">Профиль</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/settings/edit" class="nav-link" data-route="/settings/edit">Редактирование профиля</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/settings/password" class="nav-link" data-route="/settings/password">Изменить логин и пароль</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/404" class="nav-link" data-route="/404">Ошибка 404</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;     <li class="nav-item"><a href="/500" class="nav-link" data-route="/500">Ошибка 505</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;   </ul>&ndash;&gt;-->
+<!--&lt;!&ndash; </nav>&ndash;&gt;-->
+<!--</header>-->
 
 <main class="app-main">
   <div class="login-card">
@@ -29,10 +26,8 @@
         {{> Button type="submit" id="login-button" text="Авторизоваться"}}
 
       <div class="login-footer">
-        <a href="#" class="footer-link" data-page="registrationPage">Нет аккаунта?</a>
+        <a href="/sign-up" class="footer-link" data-route="/sign-up">Нет аккаунта?</a>
       </div>
     </form>
   </div>
 </main>
-
-

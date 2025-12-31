@@ -24,12 +24,12 @@
       {{> Input id="password" name="password" type="password" }}
 
       <label class="login-label" for="confirm-password">Пароль (ещё раз)</label>
-      {{> Input id="confirm-password" name="password_repeat" type="password" }}
+      {{> Input id="confirm-password" name="password_repeat" type="password_repea" }}
 
       {{> Button type="submit" id="register-button" text="Зарегистрироваться" disabled=isLoading}}
 
       <div class="login-footer">
-        <a href="#" class="footer-link" data-page="loginPage">Уже есть аккаунт?</a>
+        <a href="/" class="footer-link" data-route="/">Уже есть аккаунт?</a>
       </div>
     </form>
   </div>

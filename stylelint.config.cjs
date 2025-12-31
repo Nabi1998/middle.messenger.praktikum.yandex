@@ -1,11 +1,6 @@
 module.exports = {
-  extends: [
-    'stylelint-config-standard'
-  ],
-  plugins: [
-    '@stylistic/stylelint-plugin',
-    'stylelint-order'
-  ],
+  extends: ['stylelint-config-standard'],
+  plugins: ['@stylistic/stylelint-plugin', 'stylelint-order'],
   overrides: [
     {
       files: ['**/*.pcss', '**/*.css'],
@@ -13,14 +8,11 @@ module.exports = {
     }
   ],
   rules: {
-    'stylistic/indentation': 2,
-    'stylistic/string-quotes': 'single',
-    'stylistic/color-hex-case': 'lower',
-    'order/properties-alphabetical-order': true,
-    'stylistic/max-empty-lines': 2
+    '@stylistic/indentation': 2,
+    '@stylistic/string-quotes': 'single',
+    '@stylistic/color-hex-case': 'lower',
+    '@stylistic/max-empty-lines': 2,
+    'order/properties-alphabetical-order': true
   },
-  ignoreFiles: [
-    'node_modules/**',
-    'dist/**'
-  ]
+  ignoreFiles: ['node_modules/**', 'dist/**']
 };
