@@ -4,12 +4,8 @@ import Router from './Router';
 
 describe('Router', () => {
   let router: Router;
-  let getContentFake: sinon.SinonStub;
 
   beforeEach(() => {
-    // Создаем мок для Block
-    getContentFake = sinon.stub().returns(document.createElement('div'));
-
     // Очищаем историю перед каждым тестом
     window.history.pushState({ key: 'initial' }, '', '/');
 
