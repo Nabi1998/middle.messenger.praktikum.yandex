@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import Block from './Block';
+import Block from './Block.ts';
 
 describe('Block', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
