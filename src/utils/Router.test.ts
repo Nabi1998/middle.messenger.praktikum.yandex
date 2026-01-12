@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import Router from './Router.ts';
+import Router from './Router';
 
 describe('Router', () => {
   let router: Router;

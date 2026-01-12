@@ -17,7 +17,7 @@
     "stylelint:fix": "stylelint \"src/**/*.{css,pcss}\" --fix",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "test": "mocha -r ts-node/register \"src/**/*.test.ts\"",
+    "test": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node --no-warnings' mocha \"src/**/*.test.ts\"",
     "prepare": "husky install"
   },
   "devDependencies": {
