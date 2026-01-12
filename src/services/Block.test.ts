@@ -3,7 +3,8 @@ import sinon from 'sinon';
 import Block from './Block';
 
 describe('Block', () => {
-  let ComponentClass: typeof Block;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let ComponentClass: any;
 
   before(() => {
     ComponentClass = class extends Block {
@@ -36,7 +37,7 @@ describe('Block', () => {
 
   it('should fire init event on initialization', () => {
     class SpyComponent extends Block {
-      constructor(props: any) {
+      constructor(props: Record<string, unknown>) {
         super(props);
       }
       protected render(): string {
@@ -70,6 +71,9 @@ describe('Block', () => {
     class MountComponent extends Block {
       componentDidMount() {
         super.componentDidMount();
+      }
+      protected render(): string {
+        return '<div></div>';
       }
     }
 

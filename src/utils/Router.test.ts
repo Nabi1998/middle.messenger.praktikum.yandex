@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import Router from './Router';
-import Block from '../services/Block';
 
 describe('Router', () => {
   let router: Router;
@@ -10,13 +9,6 @@ describe('Router', () => {
   beforeEach(() => {
     // Создаем мок для Block
     getContentFake = sinon.stub().returns(document.createElement('div'));
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const BlockMock = class {
-      getContent = getContentFake;
-      dispatchComponentDidMount = sinon.stub();
-      hide = sinon.stub();
-      show = sinon.stub();
-    } as unknown as typeof Block;
 
     // Очищаем историю перед каждым тестом
     window.history.pushState({ key: 'initial' }, '', '/');
