@@ -35,23 +35,17 @@ describe('Block', () => {
   });
 
   it('should fire init event on initialization', () => {
-    const eventBusSpy = sinon.spy();
-
     class SpyComponent extends Block {
       constructor(props: any) {
         super(props);
-        // Подменяем eventBus для теста, если это возможно, или проверяем косвенно
-        // В текущей реализации сложно подменить eventBus извне.
-        // Проверим вызов render, который происходит после init
       }
       protected render(): string {
         return '<div></div>';
       }
     }
 
-    // Этот тест сложен без доступа к eventBus.
-    // Проверим, что элемент создался, значит init прошел.
     const component = new SpyComponent({});
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(component.getContent()).to.not.be.null;
   });
 
@@ -66,6 +60,7 @@ describe('Block', () => {
     const element = component.getContent();
     element.click();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(handler.called).to.be.true;
   });
 
@@ -83,6 +78,7 @@ describe('Block', () => {
 
     component.dispatchComponentDidMount();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(spy.called).to.be.true;
 
     clock.restore();

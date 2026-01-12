@@ -52,7 +52,6 @@ class WebSocketService extends EventBus {
     try {
       // Формируем корректный URL с userId
       const wsUrl = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`;
-      console.log(wsUrl, 'Connecting to WebSocket');
       this.socket = new WebSocket(wsUrl);
 
       this.socket.onopen = () => {

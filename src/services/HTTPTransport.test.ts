@@ -10,7 +10,7 @@ describe('HTTPTransport', () => {
   beforeEach(() => {
     xhr = sinon.useFakeXMLHttpRequest();
 
-    // @ts-ignore
+    // @ts-expect-error: Mocking XMLHttpRequest
     global.XMLHttpRequest = xhr;
 
     xhr.onCreate = ((request: sinon.SinonFakeXMLHttpRequest) => {

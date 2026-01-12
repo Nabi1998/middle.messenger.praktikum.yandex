@@ -6,12 +6,12 @@ import Block from '../services/Block';
 describe('Router', () => {
   let router: Router;
   let getContentFake: sinon.SinonStub;
-  let BlockMock: typeof Block;
 
   beforeEach(() => {
     // Создаем мок для Block
     getContentFake = sinon.stub().returns(document.createElement('div'));
-    BlockMock = class {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const BlockMock = class {
       getContent = getContentFake;
       dispatchComponentDidMount = sinon.stub();
       hide = sinon.stub();
@@ -29,7 +29,6 @@ describe('Router', () => {
   });
 
   it('should be a singleton', () => {
-    const router2 = new Router();
     // В текущей реализации Router не синглтон, но обычно роутеры делают такими.
     // Если он не синглтон, этот тест не нужен или должен проверять независимость.
     // Проверим просто создание.
@@ -47,6 +46,7 @@ describe('Router', () => {
 
     await router.start();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(callback.called).to.be.true;
   });
 
@@ -64,6 +64,7 @@ describe('Router', () => {
 
     router.go('/new-path');
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(callback.called).to.be.true;
   });
 
@@ -72,6 +73,7 @@ describe('Router', () => {
 
     router.back();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(backSpy.called).to.be.true;
   });
 
@@ -80,6 +82,7 @@ describe('Router', () => {
 
     router.forward();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(forwardSpy.called).to.be.true;
   });
 });
