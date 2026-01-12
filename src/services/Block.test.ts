@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import Block from './Block';
 
 describe('Block', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ComponentClass: any;
 
   before(() => {
