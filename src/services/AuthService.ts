@@ -24,7 +24,6 @@ class AuthService {
   }
 
   async signin(data: SignInData): Promise<void> {
-    console.log(data, 'data')
     await AuthAPI.signin(data);
     this.currentUser = await AuthAPI.getUser();
     this.isAuthenticated = true;
@@ -37,7 +36,6 @@ class AuthService {
   }
 
   getCurrentUser(): User | null {
-    console.log(this.currentUser, 'getCurrentUser');
     return this.currentUser;
   }
 

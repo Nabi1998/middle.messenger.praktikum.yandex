@@ -80,7 +80,7 @@ export default abstract class Block<
   }
 
   protected componentDidUpdate(oldProps: Props, newProps: Props): boolean {
-    console.error('componentDidUpdate', oldProps, newProps);
+    console.warn('componentDidUpdate', oldProps, newProps);
     return true;
   }
 

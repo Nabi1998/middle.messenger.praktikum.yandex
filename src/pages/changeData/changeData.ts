@@ -81,7 +81,7 @@ export class changeDataPage extends Block<ChangeDataProps> {
         newPassword: String(data.newPassword),
       });
 
-      console.log('✅ Пароль успешно изменен');
+      console.warn('✅ Пароль успешно изменен');
       // ✅ После успешной смены пароля — редирект на профиль
       const app = (window as any).app;
       if (app?.getRouter) {

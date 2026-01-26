@@ -75,7 +75,7 @@ export class profilePage extends Block<ProfileProps> {
   }
 
   protected componentDidUpdate(oldProps: ProfileProps, newProps: ProfileProps): boolean {
-    console.log('componentDidUpdate', oldProps, newProps);
+    console.warn('componentDidUpdate', oldProps, newProps);
     // Можно добавить логику, если нужно реагировать на изменение данных
     return true;
   }

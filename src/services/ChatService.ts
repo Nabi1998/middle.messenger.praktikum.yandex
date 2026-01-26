@@ -108,7 +108,6 @@ class ChatService extends EventBus {
 
     // Если уже подключены к этому чату — выходим
     if (this.currentChat?.id === chatId && WebSocketService.isConnected()) {
-      console.log(`🔗 Уже подключены к чату ${chatId}`);
       return;
     }
 
